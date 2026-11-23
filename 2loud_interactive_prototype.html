@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>2Loud — Concert & Venue Digital Billboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Lexend:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Atkinson Hyperlegible"', 'Lexend', 'sans-serif'],
+            display: ['"Atkinson Hyperlegible"', 'Lexend', 'sans-serif'],
+          },
+          colors: {
+            oled: '#000000',
+            surface: '#0B0B0F',
+            elevated: '#14141C',
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    :root {
+      --accent-color: #39FF14;
+      --accent-glow: rgba(57, 255, 20, 0.42);
+      --accent-soft: rgba(57, 255, 20, 0.14);
+    }
+
+    * {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: 'Atkinson Hyperlegible', 'Lexend', sans-serif;
+      background-color: #000000;
+      color: #ffffff;
+      overflow: hidden;
+      overscroll-behavior: none;
+    }
+
+    /* Hide scrollbars on horizontal preset strip while keeping touch scroll smooth */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Neon text glow for dark venues */
+    .billboard-text-glow {
+      text-shadow: 0 0 28px var(--accent-glow), 0 0 8px var(--accent-soft);
+    }
+
+    /* Blinking typing caret on billboard */
+    @keyframes caretBlink {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+    .custom-caret {
+      display: inline-block;
+      width: 0.06em;
+      min-width: 3px;
+      height: 0.85em;
+      background-color: var(--accent-color);
+      margin-left: 0.06em;
+      vertical-align: -0.06em;
+      border-radius: 2px;
+      animation: caretBlink 1s infinite;
+    }
+
+    /* Subtle eye-catching neon border pulse for dark rooms */
+    @keyframes neonBorderPulse {
+      0%, 100% {
+        box-shadow: inset 0 0 18px 2px var(--accent-soft), 0 0 10px var(--accent-soft);
+        border-color: rgba(255, 255, 255, 0.14);
+      }
+      50% {
+        box-shadow: inset 0 0 46px 8px var(--accent-glow), 0 0 28px var(--accent-glow);
+        border-color: var(--accent-color);
+      }
+    }
+    .pulse-active {
+      animation: neonBorderPulse 1.6s ease-in-out infinite;
+    }
+
+    /* 90-degree landscape billboard rotation */
+    .landscape-rotated {
+      transform: rotate(90deg);
+    }
+
+    /* Custom subtle dark scrollbar inside Recent drawer */
+    .drawer-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+    .drawer-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .drawer-scroll::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.16);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="bg-black text-white font-sans select-none">
+  <!-- App Shell: Full-height mobile-first frame centered nicely on desktop -->
+  <div id="appShell" class="relative w-full h-full flex flex-col items-center justify-center bg-black md:p-4">
+    <!-- Mobile Frame on Desktop / Full Viewport on Mobile -->
+    <div id="deviceFrame" class="relative w-full h-full md:max-w-[440px] md:h-[92vh] md:max-h-[880px] flex flex-col bg-black md:rounded-[34px] md:border md:border-white/15 md:shadow-[0_25px_90px_rgba(0,0,0,0.95)] overflow-hidden">
+
+      <!-- Top Header Bar -->
+      <header id="topBar" class="relative z-20 shrink-0 flex items-center justify-between px-3 py-2.5 bg-surface/95 border-b border-white/10 backdrop-blur-md">
+        <!-- Brand Mark & Color Swatch Picker -->
+        <div class="flex items-center gap-2.5">
+          <div class="flex items-center gap-1.5">
+            <span class="inline-block w-2.5 h-2.5 rounded-full" style="background-color: var(--accent-color); box-shadow: 0 0 10px var(--accent-glow);"></span>
+            <span class="font-display font-extrabold tracking-tight text-base text-white">2LOUD</span>
+          </div>
+
+          <!-- High-contrast OLED color switches -->
+          <div id="colorSwatches" class="flex items-center gap-1.5 pl-1" role="group" aria-label="Billboard text color">
+            <button type="button" data-color="#39FF14" data-glow="rgba(57, 255, 20, 0.42)" data-soft="rgba(57, 255, 20, 0.14)" aria-label="Neon Green" class="color-swatch w-5 h-5 rounded-full bg-[#39FF14] ring-2 ring-white scale-105 transition"></button>
+            <button type="button" data-color="#FFFFFF" data-glow="rgba(255, 255, 255, 0.35)" data-soft="rgba(255, 255, 255, 0.12)" aria-label="Stark White" class="color-swatch w-5 h-5 rounded-full bg-white opacity-75 hover:opacity-100 transition"></button>
+            <button type="button" data-color="#FFE600" data-glow="rgba(255, 230, 0, 0.4)" data-soft="rgba(255, 230, 0, 0.14)" aria-label="Safety Yellow" class="color-swatch w-5 h-5 rounded-full bg-[#FFE600] opacity-75 hover:opacity-100 transition"></button>
+            <button type="button" data-color="#00F0FF" data-glow="rgba(0, 240, 255, 0.4)" data-soft="rgba(0, 240, 255, 0.14)" aria-label="Electric Cyan" class="color-swatch w-5 h-5 rounded-full bg-[#00F0FF] opacity-75 hover:opacity-100 transition"></button>
+            <button type="button" data-color="#FF2A85" data-glow="rgba(255, 42, 133, 0.42)" data-soft="rgba(255, 42, 133, 0.14)" aria-label="Hot Magenta" class="color-swatch w-5 h-5 rounded-full bg-[#FF2A85] opacity-75 hover:opacity-100 transition"></button>
+          </div>
+        </div>
+
+        <!-- Top Right Actions: Recent Drawer & SHOW Mode -->
+        <div class="flex items-center gap-2">
+          <button id="recentBtn" type="button" class="relative flex items-center gap-1.5 px-3 py-2 rounded-xl bg-elevated hover:bg-white/15 active:scale-95 border border-white/10 text-xs font-semibold text-white/90 transition">
+            <span>Recent</span>
+            <span id="recentBadge" class="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-white/15 text-white">0</span>
+          </button>
+
+          <button id="showModeBtn" type="button" class="px-3.5 py-2 rounded-xl font-display font-extrabold text-xs tracking-wider uppercase text-black active:scale-95 transition shadow-md" style="background-color: var(--accent-color);">
+            SHOW
+          </button>
+        </div>
+      </header>
+
+      <!-- Main OLED Billboard Display Stage -->
+      <main id="billboardStage" role="button" tabindex="0" aria-label="Tap to type message" class="relative flex-1 min-h-0 w-full bg-black flex items-center justify-center overflow-hidden border-2 border-transparent transition-colors duration-200 cursor-text">
+        <!-- Subtle corner framing ticks (hidden in Show Mode) -->
+        <div id="cornerGuides" class="pointer-events-none absolute inset-3 flex flex-col justify-between opacity-25 transition-opacity duration-200">
+          <div class="flex justify-between">
+            <span class="w-3 h-3 border-t-2 border-l-2 border-white/60 rounded-tl-sm"></span>
+            <span class="w-3 h-3 border-t-2 border-r-2 border-white/60 rounded-tr-sm"></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="w-3 h-3 border-b-2 border-l-2 border-white/60 rounded-bl-sm"></span>
+            <span class="w-3 h-3 border-b-2 border-r-2 border-white/60 rounded-br-sm"></span>
+          </div>
+        </div>
+
+        <!-- Empty state prompt when message is cleared -->
+        <div id="emptyPrompt" class="hidden pointer-events-none flex flex-col items-center justify-center text-center px-6">
+          <p class="font-display font-extrabold text-2xl sm:text-3xl tracking-tight text-white/45">TAP TO TYPE</p>
+          <p class="text-xs text-white/30 mt-1.5">Or pick a preset below</p>
+        </div>
+
+        <!-- Rotatable 90° Landscape Container -->
+      <div id="rotatableContainer" class="flex items-center justify-center transition-transform duration-300 ease-out">
+        <div id="textFitBox" class="w-full h-full flex items-center justify-center overflow-hidden">
+          <div id="billboardText" class="font-bold uppercase tracking-tight leading-tight text-center billboard-text-glow transition-colors duration-150" style="font-family: 'Atkinson Hyperlegible', 'Lexend', sans-serif; color: var(--accent-color); font-size: 48px; word-break: keep-all; overflow-wrap: normal; hyphens: none;">
+            <span id="billboardTextContent"></span><span id="billboardCaret" class="custom-caret"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subtle floating exit hint in Show Mode -->
+      <div id="showModeOverlayHint" class="hidden absolute bottom-5 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2">
+        <button id="exitShowModeBtn" type="button" class="px-4 py-2 rounded-full bg-white/15 hover:bg-white/25 active:scale-95 backdrop-blur-md border border-white/20 text-xs font-bold uppercase tracking-wider text-white transition">
+          Exit Show Mode
+        </button>
+      </div>
+    </main>
+
+    <!-- Bottom Control Dock: Presets, Action Bar & Fast Input -->
+    <section id="bottomDock" class="relative z-20 shrink-0 flex flex-col gap-2 px-3 pt-2 pb-3 bg-surface/95 border-t border-white/10 backdrop-blur-md">
+      <!-- Horizontal Preset Strip + '+ Add' -->
+      <div id="presetStrip" class="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5" aria-label="Quick venue presets"></div>
+
+      <!-- Fast Message Input Box -->
+      <div class="relative flex items-center">
+        <input id="messageInput" type="text" maxlength="160" placeholder="Type loud message here..." autocomplete="off" autocapitalize="characters" spellcheck="true" aria-label="Message input" class="w-full rounded-2xl bg-elevated border border-white/15 focus:border-white/40 focus:outline-none pl-4 pr-11 py-2.5 text-sm font-bold uppercase tracking-wide text-white placeholder:text-white/35 placeholder:normal-case placeholder:font-normal transition" />
+        <button id="clearInputBtn" type="button" aria-label="Clear message input" class="absolute right-2 p-1.5 rounded-xl text-white/50 hover:text-white hover:bg-white/10 active:scale-95 transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Primary Action Row: Type, Landscape, Pulse, Reply / Clear -->
+      <div class="grid grid-cols-4 gap-2">
+        <button id="typeBtn" type="button" class="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl bg-elevated hover:bg-white/15 active:scale-95 border border-white/12 text-xs font-bold text-white transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+            <path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"></path>
+          </svg>
+          <span>Type</span>
+        </button>
+
+        <button id="landscapeBtn" type="button" class="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl bg-elevated hover:bg-white/15 active:scale-95 border border-white/12 text-xs font-bold text-white transition">
+          <svg id="landscapeIcon" xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+            <path d="M12 18h.01"></path>
+          </svg>
+          <span id="landscapeLabel">Landscape</span>
+        </button>
+
+        <button id="pulseBtn" type="button" class="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl bg-elevated hover:bg-white/15 active:scale-95 border border-white/12 text-xs font-bold text-white transition">
+          <span id="pulseDot" class="w-2.5 h-2.5 rounded-full bg-white/40 transition"></span>
+          <span>Pulse</span>
+        </button>
+
+        <button id="replyClearBtn" type="button" class="flex items-center justify-center gap-1 py-2.5 px-2 rounded-xl bg-white/12 hover:bg-white/20 active:scale-95 border border-white/15 text-xs font-extrabold text-white transition">
+          <span>Reply / Clear</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Recent Messages Slide-Up Drawer -->
+    <div id="recentDrawer" class="hidden fixed inset-0 z-40 flex items-end justify-center bg-black/75 backdrop-blur-sm">
+      <div class="w-full max-w-[440px] max-h-[75vh] flex flex-col rounded-t-3xl bg-surface border-t border-x border-white/15 p-4 shadow-2xl">
+        <div class="flex items-center justify-between pb-3 border-b border-white/10">
+          <div>
+            <h2 class="font-display font-extrabold text-base text-white">Recent Messages</h2>
+            <p class="text-[11px] text-white/45">Tap any message to display it immediately</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="clearHistoryBtn" type="button" class="px-2.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 text-[11px] font-bold text-white/75 transition">
+              Clear All
+            </button>
+            <button id="closeRecentBtn" type="button" aria-label="Close recent drawer" class="p-2 rounded-xl bg-elevated hover:bg-white/15 text-white transition">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div id="recentList" class="flex-1 overflow-y-auto drawer-scroll py-3 space-y-2"></div>
+      </div>
+    </div>
+
+    <!-- Add Custom Preset Chip Modal -->
+    <div id="addPresetModal" class="hidden fixed inset-0 z-40 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
+      <div class="w-full max-w-sm rounded-3xl bg-surface border border-white/15 p-5 shadow-2xl">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="font-display font-extrabold text-base text-white">New Preset Chip</h2>
+          <button id="closePresetModalBtn" type="button" aria-label="Close modal" class="p-1.5 rounded-xl bg-elevated hover:bg-white/15 text-white/70 hover:text-white transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        <form id="addPresetForm" class="space-y-3">
+          <input id="newPresetInput" type="text" maxlength="60" required placeholder="e.g. EXTRA LIME 🍋" class="w-full rounded-2xl bg-elevated border border-white/15 focus:border-white/40 focus:outline-none px-3.5 py-2.5 text-sm font-bold uppercase tracking-wide text-white placeholder:text-white/30 placeholder:normal-case placeholder:font-normal" />
+          <div class="flex items-center justify-end gap-2 pt-1">
+            <button id="cancelPresetBtn" type="button" class="px-4 py-2 rounded-xl bg-elevated hover:bg-white/15 text-xs font-bold text-white/80 transition">
+              Cancel
+            </button>
+            <button type="submit" class="px-4 py-2 rounded-xl text-xs font-extrabold uppercase tracking-wide text-black transition" style="background-color: var(--accent-color);">
+              Save Chip
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+      <!-- Subtle Toast Feedback Banner (no alert/confirm) -->
+      <div id="toastBanner" class="pointer-events-none fixed top-16 left-1/2 -translate-x-1/2 z-50 opacity-0 translate-y-2 transition-all duration-200 px-4 py-2 rounded-full bg-elevated border border-white/20 text-xs font-semibold text-white shadow-xl">
+        Saved to Recent
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      // --- Default Venue Presets ---
+      const DEFAULT_PRESETS = [
+        'WATER PLEASE 💧',
+        'BATHROOM 🚻',
+        '1 MORE SONG 🔥',
+        'TURN IT UP 🔊',
+        "I'M RIGHT HERE 👋",
+        'WHAT DID YOU SAY?',
+      ];
+
+      // --- Application State ---
+      const state = {
+        text: '',
+        presets: [...DEFAULT_PRESETS],
+        recent: [
+          'WHERE IS THE BAR?',
+          'CANT HEAR YOU!',
+          'MEET BY SOUND BOOTH',
+        ],
+        isLandscape: false,
+        isShowMode: false,
+        isPulseActive: false,
+      };
+
+      // --- DOM Element References ---
+      const topBar = document.getElementById('topBar');
+      const billboardStage = document.getElementById('billboardStage');
+      const cornerGuides = document.getElementById('cornerGuides');
+      const emptyPrompt = document.getElementById('emptyPrompt');
+      const rotatableContainer = document.getElementById('rotatableContainer');
+      const textFitBox = document.getElementById('textFitBox');
+      const billboardText = document.getElementById('billboardText');
+      const billboardTextContent = document.getElementById('billboardTextContent');
+      const billboardCaret = document.getElementById('billboardCaret');
+      const showModeOverlayHint = document.getElementById('showModeOverlayHint');
+      const exitShowModeBtn = document.getElementById('exitShowModeBtn');
+
+      const bottomDock = document.getElementById('bottomDock');
+      const presetStrip = document.getElementById('presetStrip');
+      const typeBtn = document.getElementById('typeBtn');
+      const landscapeBtn = document.getElementById('landscapeBtn');
+      const landscapeIcon = document.getElementById('landscapeIcon');
+      const landscapeLabel = document.getElementById('landscapeLabel');
+      const pulseBtn = document.getElementById('pulseBtn');
+      const pulseDot = document.getElementById('pulseDot');
+      const replyClearBtn = document.getElementById('replyClearBtn');
+
+      const messageInput = document.getElementById('messageInput');
+      const clearInputBtn = document.getElementById('clearInputBtn');
+
+      const recentBtn = document.getElementById('recentBtn');
+      const recentBadge = document.getElementById('recentBadge');
+      const recentDrawer = document.getElementById('recentDrawer');
+      const closeRecentBtn = document.getElementById('closeRecentBtn');
+      const recentList = document.getElementById('recentList');
+      const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+
+      const showModeBtn = document.getElementById('showModeBtn');
+      const addPresetModal = document.getElementById('addPresetModal');
+      const closePresetModalBtn = document.getElementById('closePresetModalBtn');
+      const cancelPresetBtn = document.getElementById('cancelPresetBtn');
+      const addPresetForm = document.getElementById('addPresetForm');
+      const newPresetInput = document.getElementById('newPresetInput');
+
+      const colorSwatches = document.querySelectorAll('.color-swatch');
+      const toastBanner = document.getElementById('toastBanner');
+
+      let toastTimeout = null;
+      let fitRafId = null;
+
+      // --- Toast & Focus Helpers ---
+      function showToast(message) {
+        if (!toastBanner) return;
+        toastBanner.textContent = message;
+        toastBanner.classList.remove('opacity-0', 'translate-y-2');
+        toastBanner.classList.add('opacity-100', 'translate-y-0');
+        if (toastTimeout) clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => {
+          toastBanner.classList.remove('opacity-100', 'translate-y-0');
+          toastBanner.classList.add('opacity-0', 'translate-y-2');
+        }, 1800);
+      }
+
+      function focusMessageInput() {
+        if (!messageInput) return;
+        try {
+          messageInput.focus({ preventScroll: true });
+        } catch (_) {
+          messageInput.focus();
+        }
+      }
+
+      // --- Word-Wrap + Dynamic Auto-Scaling Typography Engine ---
+      /**
+       * Scales the message text so it wraps cleanly between whole words and fills
+       * the maximum available width and height of the billboard container without
+       * clipping or overflowing in portrait or landscape mode.
+       */
+      function fitTextToBillboard() {
+        try {
+          if (!billboardStage || !rotatableContainer || !textFitBox || !billboardText || !billboardTextContent || !emptyPrompt) {
+            return;
+          }
+
+          const cleanText = (state.text || '').trim();
+
+          if (!cleanText) {
+            emptyPrompt.classList.remove('hidden');
+            billboardText.classList.add('hidden');
+            billboardTextContent.textContent = '';
+            return;
+          }
+
+          emptyPrompt.classList.add('hidden');
+          billboardText.classList.remove('hidden');
+          billboardTextContent.textContent = state.text;
+
+          const stageRect = billboardStage.getBoundingClientRect();
+          if (stageRect.width <= 0 || stageRect.height <= 0) return;
+
+          const horizontalPad = 24;
+          const verticalPad = 20;
+
+          let availableWidth;
+          let availableHeight;
+
+          if (state.isLandscape) {
+            // Rotated 90deg: container box swaps width and height
+            rotatableContainer.style.width = `${stageRect.height}px`;
+            rotatableContainer.style.height = `${stageRect.width}px`;
+            availableWidth = Math.max(32, stageRect.height - horizontalPad);
+            availableHeight = Math.max(32, stageRect.width - verticalPad);
+          } else {
+            rotatableContainer.style.width = `${stageRect.width}px`;
+            rotatableContainer.style.height = `${stageRect.height}px`;
+            availableWidth = Math.max(32, stageRect.width - horizontalPad);
+            availableHeight = Math.max(32, stageRect.height - verticalPad);
+          }
+
+          // Constrain the text block box to the available width so multi-line wrapping
+          // breaks cleanly between words instead of expanding past the container.
+          textFitBox.style.width = `${availableWidth}px`;
+          textFitBox.style.height = `${availableHeight}px`;
+
+          billboardText.style.maxWidth = `${availableWidth}px`;
+          billboardText.style.width = 'auto';
+          billboardText.style.display = 'inline-block';
+          billboardText.style.whiteSpace = 'normal';
+          billboardText.style.wordBreak = 'keep-all';
+          billboardText.style.overflowWrap = 'normal';
+          billboardText.style.hyphens = 'none';
+
+          // Hide caret during binary search measurement so width never fluctuates
+          const prevCaretVisibility = billboardCaret ? billboardCaret.style.visibility : 'visible';
+          if (billboardCaret) {
+            billboardCaret.style.visibility = 'hidden';
+          }
+
+          const minSize = 24;
+          const maxSize = 420;
+          let low = minSize;
+          let high = maxSize;
+          let bestSize = minSize;
+
+          while (low <= high) {
+            const mid = Math.floor((low + high) / 2);
+            billboardText.style.fontSize = `${mid}px`;
+
+            const textRect = billboardText.getBoundingClientRect();
+            const measuredWidth = state.isLandscape ? textRect.height : textRect.width;
+            const measuredHeight = state.isLandscape ? textRect.width : textRect.height;
+
+            const fitsWidth =
+              measuredWidth <= availableWidth + 0.5 &&
+              billboardText.scrollWidth <= availableWidth + 1 &&
+              textFitBox.scrollWidth <= availableWidth + 1;
+            const fitsHeight =
+              measuredHeight <= availableHeight + 0.5 &&
+              billboardText.scrollHeight <= availableHeight + 1 &&
+              textFitBox.scrollHeight <= availableHeight + 1;
+
+            if (fitsWidth && fitsHeight) {
+              bestSize = mid;
+              low = mid + 1;
+            } else {
+              high = mid - 1;
+            }
+          }
+
+          billboardText.style.fontSize = `${bestSize}px`;
+          if (billboardCaret) {
+            billboardCaret.style.visibility = state.isShowMode ? 'hidden' : (prevCaretVisibility || 'visible');
+          }
+        } catch (err) {
+          console.error('Error fitting text to billboard:', err);
+        }
+      }
+
+      function scheduleFit() {
+        if (fitRafId !== null) {
+          cancelAnimationFrame(fitRafId);
+        }
+        fitRafId = requestAnimationFrame(() => {
+          fitRafId = requestAnimationFrame(() => {
+            fitTextToBillboard();
+            fitRafId = null;
+          });
+        });
+      }
+
+      // --- Preset Chips Rendering ---
+      function renderPresets() {
+        if (!presetStrip) return;
+        presetStrip.innerHTML = '';
+
+        state.presets.forEach((phrase) => {
+          const chip = document.createElement('button');
+          chip.type = 'button';
+          chip.textContent = phrase;
+          chip.className = 'shrink-0 px-3.5 py-2 rounded-xl bg-elevated hover:bg-white/15 active:scale-95 border border-white/12 text-xs font-bold uppercase tracking-wide text-white whitespace-nowrap transition';
+          chip.addEventListener('click', () => {
+            setMessageText(phrase);
+            if (state.isShowMode) {
+              exitShowMode();
+            }
+            focusMessageInput();
+          });
+          presetStrip.appendChild(chip);
+        });
+
+        // '+ Add' button at the end of the preset strip
+        const addBtn = document.createElement('button');
+        addBtn.type = 'button';
+        addBtn.textContent = '+ Add';
+        addBtn.className = 'shrink-0 px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 border border-dashed border-white/30 text-xs font-extrabold uppercase tracking-wide whitespace-nowrap transition';
+        addBtn.style.color = 'var(--accent-color)';
+        addBtn.addEventListener('click', openAddPresetModal);
+        presetStrip.appendChild(addBtn);
+      }
+
+      // --- Message & Recent History Management ---
+      function setMessageText(newText, syncInput = true) {
+        state.text = newText;
+        if (syncInput && messageInput && messageInput.value !== newText) {
+          messageInput.value = newText;
+        }
+        scheduleFit();
+      }
+
+      function addToRecent(phrase) {
+        const trimmed = (phrase || '').trim();
+        if (!trimmed) return;
+        // Deduplicate case-insensitively and bring to front
+        state.recent = [
+          trimmed,
+          ...state.recent.filter((item) => item.toLowerCase() !== trimmed.toLowerCase()),
+        ].slice(0, 25);
+        updateRecentBadge();
+        renderRecentList();
+      }
+
+      function updateRecentBadge() {
+        if (recentBadge) {
+          recentBadge.textContent = String(state.recent.length);
+        }
+      }
+
+      function renderRecentList() {
+        if (!recentList) return;
+        recentList.innerHTML = '';
+        if (state.recent.length === 0) {
+          recentList.innerHTML = '<p class="text-xs text-white/40 text-center py-8">No recent messages yet.</p>';
+          return;
+        }
+
+        state.recent.forEach((item) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'w-full text-left px-3.5 py-3 rounded-2xl bg-elevated hover:bg-white/15 active:scale-[0.99] border border-white/10 text-xs font-bold uppercase tracking-wide text-white transition';
+          btn.textContent = item;
+          btn.addEventListener('click', () => {
+            setMessageText(item);
+            closeRecentDrawer();
+            scheduleFit();
+          });
+          recentList.appendChild(btn);
+        });
+      }
+
+      function openRecentDrawer() {
+        renderRecentList();
+        if (recentDrawer) {
+          recentDrawer.classList.remove('hidden');
+        }
+      }
+
+      function closeRecentDrawer() {
+        if (recentDrawer) {
+          recentDrawer.classList.add('hidden');
+        }
+      }
+
+      // --- Custom Preset Modal Handlers ---
+      function openAddPresetModal() {
+        if (newPresetInput) newPresetInput.value = '';
+        if (addPresetModal) {
+          addPresetModal.classList.remove('hidden');
+          setTimeout(() => {
+            if (newPresetInput) newPresetInput.focus();
+          }, 40);
+        }
+      }
+
+      function closeAddPresetModal() {
+        if (addPresetModal) {
+          addPresetModal.classList.add('hidden');
+        }
+      }
+
+      // --- Controls: Landscape, SHOW Mode, Pulse, Reply / Clear ---
+      function toggleLandscape() {
+        state.isLandscape = !state.isLandscape;
+        if (state.isLandscape) {
+          if (rotatableContainer) rotatableContainer.classList.add('landscape-rotated');
+          if (landscapeBtn) landscapeBtn.style.borderColor = 'var(--accent-color)';
+          if (landscapeIcon) {
+            landscapeIcon.style.transform = 'rotate(90deg)';
+            landscapeIcon.style.color = 'var(--accent-color)';
+          }
+          if (landscapeLabel) landscapeLabel.textContent = 'Portrait';
+        } else {
+          if (rotatableContainer) rotatableContainer.classList.remove('landscape-rotated');
+          if (landscapeBtn) landscapeBtn.style.borderColor = '';
+          if (landscapeIcon) {
+            landscapeIcon.style.transform = 'rotate(0deg)';
+            landscapeIcon.style.color = '';
+          }
+          if (landscapeLabel) landscapeLabel.textContent = 'Landscape';
+        }
+        scheduleFit();
+      }
+
+      function enterShowMode() {
+        state.isShowMode = true;
+        if (topBar) topBar.classList.add('hidden');
+        if (bottomDock) bottomDock.classList.add('hidden');
+        if (cornerGuides) cornerGuides.classList.add('opacity-0');
+        if (billboardCaret) billboardCaret.style.visibility = 'hidden';
+        if (showModeOverlayHint) showModeOverlayHint.classList.remove('hidden');
+        scheduleFit();
+      }
+
+      function exitShowMode() {
+        if (!state.isShowMode) return;
+        state.isShowMode = false;
+        if (topBar) topBar.classList.remove('hidden');
+        if (bottomDock) bottomDock.classList.remove('hidden');
+        if (cornerGuides) cornerGuides.classList.remove('opacity-0');
+        if (billboardCaret) billboardCaret.style.visibility = 'visible';
+        if (showModeOverlayHint) showModeOverlayHint.classList.add('hidden');
+        scheduleFit();
+      }
+
+      function togglePulse() {
+        state.isPulseActive = !state.isPulseActive;
+        if (state.isPulseActive) {
+          if (billboardStage) billboardStage.classList.add('pulse-active');
+          if (pulseBtn) pulseBtn.style.borderColor = 'var(--accent-color)';
+          if (pulseDot) {
+            pulseDot.style.backgroundColor = 'var(--accent-color)';
+            pulseDot.style.boxShadow = '0 0 8px var(--accent-glow)';
+          }
+        } else {
+          if (billboardStage) billboardStage.classList.remove('pulse-active');
+          if (pulseBtn) pulseBtn.style.borderColor = '';
+          if (pulseDot) {
+            pulseDot.style.backgroundColor = 'rgba(255, 255, 255, 0.4)';
+            pulseDot.style.boxShadow = 'none';
+          }
+        }
+      }
+
+      function handleReplyClear() {
+        const current = state.text.trim();
+        if (current) {
+          addToRecent(current);
+          showToast('Saved to Recent — ready for reply');
+        }
+        if (state.isShowMode) {
+          exitShowMode();
+        }
+        setMessageText('');
+        focusMessageInput();
+      }
+
+      // --- Event Listeners ---
+      if (messageInput) {
+        messageInput.value = state.text;
+        messageInput.addEventListener('input', (e) => {
+          setMessageText(e.target.value, false);
+        });
+      }
+
+      if (clearInputBtn) {
+        clearInputBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          setMessageText('');
+          focusMessageInput();
+        });
+      }
+
+      // Tapping billboard stage focuses input (or exits Show Mode first)
+      if (billboardStage) {
+        billboardStage.addEventListener('click', () => {
+          if (state.isShowMode) {
+            exitShowMode();
+          }
+          focusMessageInput();
+        });
+
+        billboardStage.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            if (state.isShowMode) {
+              exitShowMode();
+            }
+            focusMessageInput();
+          }
+        });
+      }
+
+      if (typeBtn) {
+        typeBtn.addEventListener('click', () => {
+          if (state.isShowMode) {
+            exitShowMode();
+          }
+          focusMessageInput();
+        });
+      }
+
+      if (landscapeBtn) landscapeBtn.addEventListener('click', toggleLandscape);
+      if (pulseBtn) pulseBtn.addEventListener('click', togglePulse);
+      if (replyClearBtn) replyClearBtn.addEventListener('click', handleReplyClear);
+
+      if (showModeBtn) showModeBtn.addEventListener('click', enterShowMode);
+      if (exitShowModeBtn) {
+        exitShowModeBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          exitShowMode();
+        });
+      }
+
+      if (recentBtn) recentBtn.addEventListener('click', openRecentDrawer);
+      if (closeRecentBtn) closeRecentBtn.addEventListener('click', closeRecentDrawer);
+      if (recentDrawer) {
+        recentDrawer.addEventListener('click', (e) => {
+          if (e.target === recentDrawer) closeRecentDrawer();
+        });
+      }
+      if (clearHistoryBtn) {
+        clearHistoryBtn.addEventListener('click', () => {
+          state.recent = [];
+          updateRecentBadge();
+          renderRecentList();
+        });
+      }
+
+      if (closePresetModalBtn) closePresetModalBtn.addEventListener('click', closeAddPresetModal);
+      if (cancelPresetBtn) cancelPresetBtn.addEventListener('click', closeAddPresetModal);
+      if (addPresetModal) {
+        addPresetModal.addEventListener('click', (e) => {
+          if (e.target === addPresetModal) closeAddPresetModal();
+        });
+      }
+
+      if (addPresetForm) {
+        addPresetForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const phrase = newPresetInput ? newPresetInput.value.trim() : '';
+          if (!phrase) return;
+          state.presets.unshift(phrase);
+          renderPresets();
+          setMessageText(phrase);
+          closeAddPresetModal();
+          showToast('Preset chip added');
+        });
+      }
+
+      // Color swatch switcher
+      colorSwatches.forEach((swatch) => {
+        swatch.addEventListener('click', () => {
+          const color = swatch.getAttribute('data-color');
+          const glow = swatch.getAttribute('data-glow');
+          const soft = swatch.getAttribute('data-soft');
+
+          document.documentElement.style.setProperty('--accent-color', color);
+          document.documentElement.style.setProperty('--accent-glow', glow);
+          document.documentElement.style.setProperty('--accent-soft', soft);
+
+          colorSwatches.forEach((s) => {
+            s.classList.remove('ring-2', 'ring-white', 'scale-105');
+            s.classList.add('opacity-75');
+          });
+          swatch.classList.remove('opacity-75');
+          swatch.classList.add('ring-2', 'ring-white', 'scale-105');
+          scheduleFit();
+        });
+      });
+
+      // Recalculate auto-scaling text on window resize, orientation change, and ResizeObserver
+      window.addEventListener('resize', scheduleFit);
+      window.addEventListener('orientationchange', scheduleFit);
+
+      if (typeof ResizeObserver !== 'undefined') {
+        const resizeObserver = new ResizeObserver(() => {
+          scheduleFit();
+        });
+        resizeObserver.observe(billboardStage);
+      }
+
+      // --- Initial Render ---
+      renderPresets();
+      updateRecentBadge();
+      renderRecentList();
+      focusMessageInput();
+
+      function triggerFontReadyFit() {
+        scheduleFit();
+        if (document.fonts && document.fonts.load) {
+          Promise.allSettled([
+            document.fonts.load('700 48px "Atkinson Hyperlegible"'),
+            document.fonts.load('400 16px "Atkinson Hyperlegible"'),
+            document.fonts.load('700 16px "Lexend"'),
+          ]).then(() => {
+            scheduleFit();
+          });
+        }
+      }
+
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => {
+          triggerFontReadyFit();
+        });
+      } else {
+        triggerFontReadyFit();
+      }
+    })();
+  </script>
+</body>
+</html>
