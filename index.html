@@ -166,7 +166,7 @@
         </div>
 
         <!-- Empty state prompt when message is cleared -->
-        <div id="emptyPrompt" class="hidden pointer-events-none flex flex-col items-center justify-center text-center px-6">
+        <div id="emptyPrompt" class="hidden pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center px-6 z-10">
           <p class="font-display font-extrabold text-2xl sm:text-3xl tracking-tight text-white/45">TAP TO TYPE</p>
           <p class="text-xs text-white/30 mt-1.5">Or pick a preset below</p>
         </div>
@@ -270,7 +270,7 @@
           </button>
         </div>
         <form id="addPresetForm" class="space-y-3">
-          <input id="newPresetInput" type="text" maxlength="60" required placeholder="e.g. EXTRA LIME 🍋" class="w-full rounded-2xl bg-elevated border border-white/15 focus:border-white/40 focus:outline-none px-3.5 py-2.5 text-sm font-bold uppercase tracking-wide text-white placeholder:text-white/30 placeholder:normal-case placeholder:font-normal" />
+          <input id="newPresetInput" type="text" maxlength="60" required placeholder="Type a commonly used phrase, e.g. PLAY HOT2GO" class="w-full rounded-2xl bg-elevated border border-white/15 focus:border-white/40 focus:outline-none px-3.5 py-2.5 text-sm font-bold uppercase tracking-wide text-white placeholder:text-white/30 placeholder:normal-case placeholder:font-normal" />
           <div class="flex items-center justify-end gap-2 pt-1">
             <button id="cancelPresetBtn" type="button" class="px-4 py-2 rounded-xl bg-elevated hover:bg-white/15 text-xs font-bold text-white/80 transition">
               Cancel
@@ -384,6 +384,54 @@
         } catch (_) {
           messageInput.focus();
         }
+      }
+
+      // --- Message State & Recent History ---
+      function setMessageText(nextText, syncInput = true) {
+        state.text = nextText || '';
+        if (syncInput && messageInput && messageInput.value !== state.text) {
+          messageInput.value = state.text;
+        }
+        scheduleFit();
+      }
+
+      function addToRecent(phrase) {
+        const clean = (phrase || '').trim();
+        if (!clean) return;
+        state.recent = [clean, ...state.recent.filter((item) => item !== clean)].slice(0, 20);
+        updateRecentBadge();
+        renderRecentList();
+      }
+
+      function updateRecentBadge() {
+        if (!recentBadge) return;
+        recentBadge.textContent = String(state.recent.length);
+      }
+
+      function renderRecentList() {
+        if (!recentList) return;
+        recentList.innerHTML = '';
+
+        if (!state.recent.length) {
+          const emptyEl = document.createElement('p');
+          emptyEl.className = 'text-xs text-white/40 text-center py-6';
+          emptyEl.textContent = 'No recent messages yet.';
+          recentList.appendChild(emptyEl);
+          return;
+        }
+
+        state.recent.forEach((phrase) => {
+          const itemBtn = document.createElement('button');
+          itemBtn.type = 'button';
+          itemBtn.className = 'w-full text-left px-3.5 py-2.5 rounded-2xl bg-elevated hover:bg-white/15 active:scale-[0.99] border border-white/10 text-sm font-bold uppercase tracking-wide text-white transition';
+          itemBtn.textContent = phrase;
+          itemBtn.addEventListener('click', () => {
+            setMessageText(phrase);
+            closeRecentDrawer();
+            focusMessageInput();
+          });
+          recentList.appendChild(itemBtn);
+        });
       }
 
       // --- Word-Wrap + Dynamic Auto-Scaling Typography Engine ---
@@ -533,6 +581,15 @@
         if (!presetStrip) return;
         presetStrip.innerHTML = '';
 
+        // '+ Add' button at the start of the presets row for quick access to custom phrases
+        const addBtn = document.createElement('button');
+        addBtn.type = 'button';
+        addBtn.textContent = '+ Add Preset';
+        addBtn.className = 'shrink-0 px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 border border-dashed border-white/30 text-xs font-extrabold uppercase tracking-wide whitespace-nowrap transition';
+        addBtn.style.color = 'var(--accent-color)';
+        addBtn.addEventListener('click', openAddPresetModal);
+        presetStrip.appendChild(addBtn);
+
         state.presets.forEach((phrase) => {
           const chip = document.createElement('button');
           chip.type = 'button';
@@ -543,64 +600,6 @@
             focusMessageInput();
           });
           presetStrip.appendChild(chip);
-        });
-
-        // '+ Add' button at the end of the preset strip
-        const addBtn = document.createElement('button');
-        addBtn.type = 'button';
-        addBtn.textContent = '+ Add';
-        addBtn.className = 'shrink-0 px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 border border-dashed border-white/30 text-xs font-extrabold uppercase tracking-wide whitespace-nowrap transition';
-        addBtn.style.color = 'var(--accent-color)';
-        addBtn.addEventListener('click', openAddPresetModal);
-        presetStrip.appendChild(addBtn);
-      }
-
-      // --- Message & Recent History Management ---
-      function setMessageText(newText, syncInput = true) {
-        state.text = newText;
-        if (syncInput && messageInput && messageInput.value !== newText) {
-          messageInput.value = newText;
-        }
-        scheduleFit();
-      }
-
-      function addToRecent(phrase) {
-        const trimmed = (phrase || '').trim();
-        if (!trimmed) return;
-        // Deduplicate case-insensitively and bring to front
-        state.recent = [
-          trimmed,
-          ...state.recent.filter((item) => item.toLowerCase() !== trimmed.toLowerCase()),
-        ].slice(0, 25);
-        updateRecentBadge();
-        renderRecentList();
-      }
-
-      function updateRecentBadge() {
-        if (recentBadge) {
-          recentBadge.textContent = String(state.recent.length);
-        }
-      }
-
-      function renderRecentList() {
-        if (!recentList) return;
-        recentList.innerHTML = '';
-        if (state.recent.length === 0) {
-          recentList.innerHTML = '<p class="text-xs text-white/40 text-center py-8">No recent messages yet.</p>';
-          return;
-        }
-
-        state.recent.forEach((item) => {
-          const btn = document.createElement('button');
-          btn.type = 'button';
-          btn.className = 'w-full text-left px-3.5 py-3 rounded-2xl bg-elevated hover:bg-white/15 active:scale-[0.99] border border-white/10 text-xs font-bold uppercase tracking-wide text-white transition';
-          btn.textContent = item;
-          btn.addEventListener('click', () => {
-            setMessageText(item);
-            closeRecentDrawer();
-            scheduleFit();
-          });
-          recentList.appendChild(btn);
         });
       }
 
