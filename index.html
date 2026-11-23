@@ -181,8 +181,8 @@
       </div>
 
       <!-- Subtle floating exit hint in Show Mode -->
-      <div id="showModeOverlayHint" class="hidden absolute bottom-5 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2">
-        <button id="exitShowModeBtn" type="button" class="px-4 py-2 rounded-full bg-white/15 hover:bg-white/25 active:scale-95 backdrop-blur-md border border-white/20 text-xs font-bold uppercase tracking-wider text-white transition">
+      <div id="showModeOverlayHint" class="hidden absolute bottom-2 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5">
+        <button id="exitShowModeBtn" type="button" class="px-2.5 py-1 rounded-full bg-white/[0.06] hover:bg-white/15 active:scale-95 backdrop-blur-[2px] border border-white/10 text-[10px] font-semibold uppercase tracking-wider text-white/40 hover:text-white/80 transition">
           Exit Show Mode
         </button>
       </div>
@@ -463,7 +463,7 @@
           if (stageRect.width <= 0 || stageRect.height <= 0) return;
 
           const horizontalPad = 24;
-          const verticalPad = 20;
+          const verticalPad = state.isShowMode ? 48 : 20;
 
           // Measure the outer stage rect and use its unrotated dimensions as the
           // true visual bounding box so rotating 90deg never measures a mid-transition
