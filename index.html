@@ -417,20 +417,27 @@
           const horizontalPad = 24;
           const verticalPad = 20;
 
+          // Measure the outer stage rect and use its unrotated dimensions as the
+          // true visual bounding box so rotating 90deg never measures a mid-transition
+          // or pre-rotated box incorrectly.
+          const stageWidth = stageRect.width;
+          const stageHeight = stageRect.height;
+
           let availableWidth;
           let availableHeight;
 
           if (state.isLandscape) {
-            // Rotated 90deg: container box swaps width and height
-            rotatableContainer.style.width = `${stageRect.height}px`;
-            rotatableContainer.style.height = `${stageRect.width}px`;
-            availableWidth = Math.max(32, stageRect.height - horizontalPad);
-            availableHeight = Math.max(32, stageRect.width - verticalPad);
+            // Rotated 90deg: visual horizontal axis comes from stageHeight,
+            // visual vertical axis comes from stageWidth.
+            rotatableContainer.style.width = `${stageHeight}px`;
+            rotatableContainer.style.height = `${stageWidth}px`;
+            availableWidth = Math.max(32, stageHeight - horizontalPad);
+            availableHeight = Math.max(32, stageWidth - verticalPad);
           } else {
-            rotatableContainer.style.width = `${stageRect.width}px`;
-            rotatableContainer.style.height = `${stageRect.height}px`;
-            availableWidth = Math.max(32, stageRect.width - horizontalPad);
-            availableHeight = Math.max(32, stageRect.height - verticalPad);
+            rotatableContainer.style.width = `${stageWidth}px`;
+            rotatableContainer.style.height = `${stageHeight}px`;
+            availableWidth = Math.max(32, stageWidth - horizontalPad);
+            availableHeight = Math.max(32, stageHeight - verticalPad);
           }
 
           // Constrain the text block box to the available width so multi-line wrapping
@@ -438,9 +445,11 @@
           textFitBox.style.width = `${availableWidth}px`;
           textFitBox.style.height = `${availableHeight}px`;
 
+          // Ensure text width allows lines to expand toward full availableWidth
+          // while still wrapping strictly at spaces between words.
           billboardText.style.maxWidth = `${availableWidth}px`;
-          billboardText.style.width = 'auto';
-          billboardText.style.display = 'inline-block';
+          billboardText.style.width = '100%';
+          billboardText.style.display = 'block';
           billboardText.style.whiteSpace = 'normal';
           billboardText.style.wordBreak = 'keep-all';
           billboardText.style.overflowWrap = 'normal';
@@ -457,6 +466,11 @@
           let low = minSize;
           let high = maxSize;
           let bestSize = minSize;
+
+          // Temporarily disable CSS transform transition during measurement so
+          // bounding box readings reflect the exact target orientation immediately.
+          const prevTransition = rotatableContainer.style.transition;
+          rotatableContainer.style.transition = 'none';
 
           while (low <= high) {
             const mid = Math.floor((low + high) / 2);
@@ -484,6 +498,7 @@
           }
 
           billboardText.style.fontSize = `${bestSize}px`;
+          rotatableContainer.style.transition = prevTransition;
           if (billboardCaret) {
             billboardCaret.style.visibility = state.isShowMode ? 'hidden' : (prevCaretVisibility || 'visible');
           }
@@ -504,7 +519,16 @@
         });
       }
 
-      // --- Preset Chips Rendering ---
+      // Run multiple passes across orientation changes so CSS layout/viewport
+      // shifts settle completely before locking in the largest possible font size.
+      function handleOrientationChange() {
+        scheduleFit();
+        setTimeout(scheduleFit, 60);
+        setTimeout(scheduleFit, 220);
+        setTimeout(scheduleFit, 360);
+      }
+
+      // --- Preset Strip Rendering ---
       function renderPresets() {
         if (!presetStrip) return;
         presetStrip.innerHTML = '';
@@ -516,9 +540,6 @@
           chip.className = 'shrink-0 px-3.5 py-2 rounded-xl bg-elevated hover:bg-white/15 active:scale-95 border border-white/12 text-xs font-bold uppercase tracking-wide text-white whitespace-nowrap transition';
           chip.addEventListener('click', () => {
             setMessageText(phrase);
-            if (state.isShowMode) {
-              exitShowMode();
-            }
             focusMessageInput();
           });
           presetStrip.appendChild(chip);
@@ -633,7 +654,7 @@
           }
           if (landscapeLabel) landscapeLabel.textContent = 'Landscape';
         }
-        scheduleFit();
+        handleOrientationChange();
       }
 
       function enterShowMode() {
@@ -804,8 +825,11 @@
       });
 
       // Recalculate auto-scaling text on window resize, orientation change, and ResizeObserver
-      window.addEventListener('resize', scheduleFit);
-      window.addEventListener('orientationchange', scheduleFit);
+      window.addEventListener('resize', handleOrientationChange);
+      window.addEventListener('orientationchange', handleOrientationChange);
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', handleOrientationChange);
+      }
 
       if (typeof ResizeObserver !== 'undefined') {
         const resizeObserver = new ResizeObserver(() => {
