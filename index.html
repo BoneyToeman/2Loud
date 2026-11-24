@@ -547,6 +547,7 @@
       let camCountdownTimer = null;
       let camCaptureTimeout = null;
       let isEditPresetsOpen = false;
+      let editingPresetIndex = null;
 
       // --- Toast & Focus Helpers ---
       function showToast(message) {
@@ -779,15 +780,36 @@
       function removePresetAtIndex(index) {
         if (index < 0 || index >= state.presets.length) return;
         state.presets.splice(index, 1);
+        if (editingPresetIndex === index) {
+          editingPresetIndex = null;
+        } else if (editingPresetIndex !== null && editingPresetIndex > index) {
+          editingPresetIndex -= 1;
+        }
         renderPresets();
         renderEditPresetsMenu();
         savePresetsToCloud();
         showToast('Preset removed');
       }
 
+      function updatePresetAtIndex(index, nextValue) {
+        if (index < 0 || index >= state.presets.length) return;
+        const cleaned = (nextValue || '').trim();
+        editingPresetIndex = null;
+        if (!cleaned || cleaned === state.presets[index]) {
+          renderEditPresetsMenu();
+          return;
+        }
+        state.presets[index] = cleaned;
+        renderPresets();
+        renderEditPresetsMenu();
+        savePresetsToCloud();
+        showToast('Preset updated');
+      }
+
       function clearAllPresetsKeepAddButton() {
         if (!state.presets.length) return;
         state.presets = [];
+        editingPresetIndex = null;
         renderPresets();
         renderEditPresetsMenu();
         savePresetsToCloud();
@@ -1254,6 +1276,7 @@
         editPresetsList.innerHTML = '';
 
         if (!state.presets.length) {
+          editingPresetIndex = null;
           const emptyMsg = document.createElement('p');
           emptyMsg.className = 'text-xs text-white/45 text-center py-4 px-2';
           emptyMsg.textContent = 'No presets left. Use + ADD PRESET to create one.';
@@ -1263,11 +1286,67 @@
 
         state.presets.forEach((phrase, idx) => {
           const itemRow = document.createElement('div');
-          itemRow.className = 'flex items-center justify-between gap-2 px-2.5 py-2 rounded-xl hover:bg-white/5 transition';
+          itemRow.className = 'flex items-center justify-between gap-2 px-2 py-1.5 rounded-xl hover:bg-white/5 transition';
 
-          const labelEl = document.createElement('span');
-          labelEl.className = 'truncate text-xs font-bold uppercase tracking-wide text-white/90';
-          labelEl.textContent = phrase;
+          if (editingPresetIndex === idx) {
+            const editInput = document.createElement('input');
+            editInput.type = 'text';
+            editInput.maxLength = 60;
+            editInput.value = phrase;
+            editInput.setAttribute('aria-label', `Edit preset ${phrase}`);
+            editInput.className = 'flex-1 min-w-0 rounded-lg bg-black/70 border border-white/35 focus:border-[#FF9F43] focus:outline-none px-2.5 py-1.5 text-xs font-bold uppercase tracking-wide text-white caret-[#FF9F43]';
+
+            let isCommitted = false;
+            const commitEdit = () => {
+              if (isCommitted) return;
+              isCommitted = true;
+              updatePresetAtIndex(idx, editInput.value);
+            };
+
+            editInput.addEventListener('click', (e) => {
+              e.stopPropagation();
+            });
+            editInput.addEventListener('keydown', (e) => {
+              e.stopPropagation();
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                commitEdit();
+              } else if (e.key === 'Escape') {
+                e.preventDefault();
+                isCommitted = true;
+                editingPresetIndex = null;
+                renderEditPresetsMenu();
+              }
+            });
+            editInput.addEventListener('blur', () => {
+              commitEdit();
+            });
+
+            itemRow.appendChild(editInput);
+
+            setTimeout(() => {
+              try {
+                editInput.focus({ preventScroll: true });
+                const endPos = editInput.value.length;
+                editInput.setSelectionRange(endPos, endPos);
+              } catch (err) {
+                editInput.focus();
+              }
+            }, 0);
+          } else {
+            const labelBtn = document.createElement('button');
+            labelBtn.type = 'button';
+            labelBtn.title = 'Tap to edit preset';
+            labelBtn.className = 'flex-1 min-w-0 text-left px-1 py-1 rounded-lg text-xs font-bold uppercase tracking-wide text-white/90 hover:text-white truncate transition cursor-text';
+            labelBtn.textContent = phrase;
+            labelBtn.addEventListener('click', (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              editingPresetIndex = idx;
+              renderEditPresetsMenu();
+            });
+            itemRow.appendChild(labelBtn);
+          }
 
           const removeBtn = document.createElement('button');
           removeBtn.type = 'button';
@@ -1286,7 +1365,6 @@
             removePresetAtIndex(idx);
           });
 
-          itemRow.appendChild(labelEl);
           itemRow.appendChild(removeBtn);
           editPresetsList.appendChild(itemRow);
         });
@@ -1294,6 +1372,9 @@
 
       function setEditPresetsMenuOpen(open) {
         isEditPresetsOpen = Boolean(open);
+        if (!isEditPresetsOpen) {
+          editingPresetIndex = null;
+        }
         if (!editPresetsMenu) return;
         if (isEditPresetsOpen) {
           renderEditPresetsMenu();
@@ -1546,7 +1627,7 @@
           setEditPresetsMenuOpen(false);
           openDeleteConfirmation({
             title: 'Clear all presets?',
-            message: 'Remove all saved presets while keeping the + ADD PRESET button?',
+            message: 'All presets will be permanently deleted. This action cannot be undone.',
             confirmLabel: 'Clear All',
             onConfirm: () => clearAllPresetsKeepAddButton(),
           });
