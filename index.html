@@ -126,30 +126,32 @@
           <div class="flex items-center gap-1.5">
             <span class="inline-block w-2.5 h-2.5 rounded-full" style="background-color: var(--accent-color); box-shadow: 0 0 10px var(--accent-glow);"></span>
             <span class="font-display font-extrabold tracking-tight text-base text-white">2LOUD</span>
+            <span class="px-1.5 py-0.5 rounded-md bg-white/10 text-[10px] font-bold tracking-wide text-white/60">v1.0</span>
           </div>
 
-          <!-- High-contrast OLED color switches -->
+          <!-- High-Contrast Color Swatches -->
           <div id="colorSwatches" class="flex items-center gap-1.5 pl-1" role="group" aria-label="Billboard text color">
-            <button type="button" data-color="#39FF14" data-glow="rgba(57, 255, 20, 0.42)" data-soft="rgba(57, 255, 20, 0.14)" aria-label="Neon Green" class="color-swatch w-5 h-5 rounded-full bg-[#39FF14] ring-2 ring-white scale-105 transition"></button>
-            <button type="button" data-color="#FFE600" data-glow="rgba(255, 230, 0, 0.42)" data-soft="rgba(255, 230, 0, 0.14)" aria-label="Safety Yellow" class="color-swatch w-5 h-5 rounded-full bg-[#FFE600] opacity-75 hover:opacity-100 transition"></button>
-            <button type="button" data-color="#FFFFFF" data-glow="rgba(255, 255, 255, 0.36)" data-soft="rgba(255, 255, 255, 0.12)" aria-label="Pure White" class="color-swatch w-5 h-5 rounded-full bg-white opacity-75 hover:opacity-100 transition"></button>
-            <button type="button" data-color="#00F0FF" data-glow="rgba(0, 240, 255, 0.42)" data-soft="rgba(0, 240, 255, 0.14)" aria-label="Electric Cyan" class="color-swatch w-5 h-5 rounded-full bg-[#00F0FF] opacity-75 hover:opacity-100 transition"></button>
-            <button type="button" data-color="#FF2E93" data-glow="rgba(255, 46, 147, 0.42)" data-soft="rgba(255, 46, 147, 0.14)" aria-label="Hot Magenta" class="color-swatch w-5 h-5 rounded-full bg-[#FF2E93] opacity-75 hover:opacity-100 transition"></button>
+            <button type="button" data-color="#39FF14" aria-label="Neon Green" class="color-swatch w-5 h-5 rounded-full bg-[#39FF14] ring-2 ring-white scale-105 transition-transform"></button>
+            <button type="button" data-color="#FFFFFF" aria-label="Pure White" class="color-swatch w-5 h-5 rounded-full bg-[#FFFFFF] opacity-75 hover:opacity-100 transition-opacity"></button>
+            <button type="button" data-color="#FFE600" aria-label="Electric Yellow" class="color-swatch w-5 h-5 rounded-full bg-[#FFE600] opacity-75 hover:opacity-100 transition-opacity"></button>
+            <button type="button" data-color="#00F0FF" aria-label="Cyber Cyan" class="color-swatch w-5 h-5 rounded-full bg-[#00F0FF] opacity-75 hover:opacity-100 transition-opacity"></button>
+            <button type="button" data-color="#FF2A85" aria-label="Hot Magenta" class="color-swatch w-5 h-5 rounded-full bg-[#FF2A85] opacity-75 hover:opacity-100 transition-opacity"></button>
           </div>
         </div>
 
         <!-- Top Right Actions: Recent Drawer, Reaction Cam & SHOW Mode -->
-        <div class="flex items-center gap-1.5">
-          <button id="recentBtn" type="button" class="relative flex items-center gap-1.5 px-2.5 py-2 rounded-xl bg-elevated hover:bg-white/15 active:scale-95 border border-white/10 text-xs font-semibold text-white/90 transition">
+        <div class="flex items-center gap-2">
+          <button id="recentBtn" type="button" class="relative flex items-center gap-1.5 px-3 py-2 rounded-xl bg-elevated hover:bg-white/15 active:scale-95 border border-white/10 text-xs font-semibold text-white/90 transition">
             <span>Recent</span>
             <span id="recentBadge" class="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-white/15 text-white">0</span>
           </button>
 
-          <button id="reactionCamBtn" type="button" aria-label="Toggle Reaction Camera" title="Reaction Cam (snaps 3s after SHOW)" class="flex items-center justify-center p-2 rounded-xl bg-elevated hover:bg-white/15 active:scale-95 border border-white/10 text-white/90 transition">
-            <svg id="reactionCamIcon" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0 transition" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
-              <circle cx="12" cy="13" r="3"></circle>
+          <button id="reactionCamBtn" type="button" aria-label="Toggle Reaction Camera" title="Arm front camera for 3s reaction snapshot on SHOW" class="relative flex items-center justify-center p-2 rounded-xl bg-elevated hover:bg-white/15 active:scale-95 border border-white/10 text-white/85 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+              <circle cx="12" cy="13" r="4"></circle>
             </svg>
+            <span id="camArmedDot" class="hidden absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-red-500 ring-2 ring-black"></span>
           </button>
 
           <button id="showModeBtn" type="button" class="px-3.5 py-2 rounded-xl font-display font-extrabold text-xs tracking-wider uppercase text-black active:scale-95 transition shadow-md" style="background-color: var(--accent-color);">
@@ -160,6 +162,12 @@
 
       <!-- Main OLED Billboard Display Stage -->
       <main id="billboardStage" role="button" tabindex="0" aria-label="Tap to type message" class="relative flex-1 min-h-0 w-full bg-black flex items-center justify-center overflow-hidden border-2 border-transparent transition-colors duration-200 cursor-text">
+        <!-- Subtle 3s Reaction Cam Countdown Pill in Show Mode -->
+        <div id="camCountdownPill" class="hidden pointer-events-none absolute top-3 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/75 border border-white/15 backdrop-blur-md text-[11px] font-bold tracking-wide text-white/90">
+          <span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+          <span id="camCountdownText">Reaction Cam in 3s...</span>
+        </div>
+
         <!-- Subtle corner framing ticks (hidden in Show Mode) -->
         <div id="cornerGuides" class="pointer-events-none absolute inset-3 flex flex-col justify-between opacity-25 transition-opacity duration-200">
           <div class="flex justify-between">
@@ -188,22 +196,16 @@
       </div>
 
       <!-- Subtle floating exit hint in Show Mode -->
-      <div id="showModeOverlayHint" class="hidden absolute bottom-3 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2">
-        <button id="exitShowModeBtn" type="button" class="px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 backdrop-blur-sm border border-white/15 text-[10px] font-semibold uppercase tracking-wider text-white/60 hover:text-white/90 transition">
+      <div id="showModeOverlayHint" class="hidden absolute bottom-2 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2">
+        <button id="exitShowModeBtn" type="button" class="px-2.5 py-1 rounded-full bg-white/[0.07] hover:bg-white/20 active:scale-95 backdrop-blur-sm border border-white/10 text-[10px] font-semibold uppercase tracking-wider text-white/45 hover:text-white/90 transition">
           Exit Show Mode
         </button>
       </div>
-
-      <!-- Subtle Reaction Cam Countdown Pill in Show Mode -->
-      <div id="reactionCountdownPill" class="hidden pointer-events-none absolute top-3 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/70 border border-white/15 backdrop-blur-sm">
-        <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-        <span id="reactionCountdownText" class="text-[10px] font-bold uppercase tracking-wider text-white/80">Reaction Cam: 3s</span>
-      </div>
-
-      <!-- Hidden video & canvas elements for front-facing Reaction Cam capture -->
-      <video id="reactionVideo" autoplay playsinline muted class="hidden"></video>
-      <canvas id="reactionCanvas" class="hidden"></canvas>
     </main>
+
+    <!-- Hidden video & canvas elements for silent front-camera reaction capture -->
+    <video id="reactionVideo" playsinline muted class="hidden"></video>
+    <canvas id="reactionCanvas" class="hidden"></canvas>
 
     <!-- Bottom Control Dock: Presets, Action Bar & Fast Input -->
     <section id="bottomDock" class="relative z-20 shrink-0 flex flex-col gap-2 px-3 pt-2 pb-3 bg-surface/95 border-t border-white/10 backdrop-blur-md">
@@ -213,12 +215,18 @@
       <!-- Fast Message Input Box -->
       <div class="relative flex items-center">
         <input id="messageInput" type="text" maxlength="160" placeholder="Type loud message here..." autocomplete="off" autocapitalize="characters" spellcheck="true" aria-label="Message input" class="w-full rounded-2xl bg-elevated border border-white/15 focus:border-white/40 focus:outline-none pl-4 pr-11 py-2.5 text-sm font-bold uppercase tracking-wide text-white placeholder:text-white/35 placeholder:normal-case placeholder:font-normal transition" />
+        <button id="clearInputBtn" type="button" aria-label="Clear message input" class="absolute right-2 p-1.5 rounded-xl text-white/50 hover:text-white hover:bg-white/10 active:scale-95 transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
       </div>
 
       <!-- Primary Action Row: Type, Landscape, Pulse, Reply / Clear -->
       <div class="grid grid-cols-4 gap-2">
         <button id="typeBtn" type="button" class="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl bg-elevated hover:bg-white/15 active:scale-95 border border-white/12 text-xs font-bold text-white transition">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="2" y="4" width="20" height="16" rx="2"></rect>
             <path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"></path>
           </svg>
@@ -226,7 +234,7 @@
         </button>
 
         <button id="landscapeBtn" type="button" class="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl bg-elevated hover:bg-white/15 active:scale-95 border border-white/12 text-xs font-bold text-white transition">
-          <svg id="landscapeIcon" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <svg id="landscapeIcon" xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="4" y="2" width="16" height="20" rx="2"></rect>
             <path d="M12 18h.01"></path>
           </svg>
@@ -234,11 +242,11 @@
         </button>
 
         <button id="pulseBtn" type="button" class="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl bg-elevated hover:bg-white/15 active:scale-95 border border-white/12 text-xs font-bold text-white transition">
-          <span id="pulseDot" class="w-2.5 h-2.5 rounded-full bg-white/40 transition shrink-0"></span>
+          <span id="pulseDot" class="w-2.5 h-2.5 rounded-full bg-white/40 transition"></span>
           <span>Pulse</span>
         </button>
 
-        <button id="replyClearBtn" type="button" class="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl bg-white/12 hover:bg-white/20 active:scale-95 border border-white/15 text-xs font-extrabold text-white transition">
+        <button id="replyClearBtn" type="button" class="flex items-center justify-center gap-1 py-2.5 px-2 rounded-xl bg-white/12 hover:bg-white/20 active:scale-95 border border-white/15 text-xs font-extrabold text-white transition">
           <span>Reply / Clear</span>
         </button>
       </div>
@@ -268,38 +276,38 @@
       </div>
     </div>
 
-    <!-- Reaction Photo Lightbox Modal -->
-    <div id="reactionPhotoModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4">
-      <div class="w-full max-w-sm rounded-3xl bg-surface border border-white/15 p-4 shadow-2xl flex flex-col gap-3">
+    <!-- Reaction Snapshot Preview Modal -->
+    <div id="photoPreviewModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4">
+      <div class="w-full max-w-sm rounded-3xl bg-surface border border-white/15 p-4 shadow-2xl space-y-3">
         <div class="flex items-center justify-between">
-          <div>
-            <h2 class="font-display font-extrabold text-sm text-white">Reaction Snapshot</h2>
-            <p id="reactionModalCaption" class="text-[11px] font-bold uppercase tracking-wide text-white/60 truncate max-w-[230px]"></p>
+          <div class="min-w-0 pr-2">
+            <h3 class="font-display font-extrabold text-sm text-white">Reaction Snapshot</h3>
+            <p id="photoPreviewCaption" class="truncate text-xs text-white/55 uppercase font-bold"></p>
           </div>
-          <button id="closeReactionModalBtn" type="button" aria-label="Close reaction photo" class="p-1.5 rounded-xl bg-elevated hover:bg-white/15 text-white/75 hover:text-white transition">
+          <button id="closePhotoModalBtn" type="button" aria-label="Close photo preview" class="p-1.5 rounded-xl bg-elevated hover:bg-white/15 text-white/75 hover:text-white transition">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
           </button>
         </div>
-        <div class="relative w-full aspect-[3/4] rounded-2xl overflow-hidden bg-black border border-white/10">
-          <img id="reactionModalImg" src="" alt="Captured reaction" class="w-full h-full object-cover" />
+        <div class="overflow-hidden rounded-2xl border border-white/10 bg-black">
+          <img id="photoPreviewImg" src="" alt="Reaction snapshot" class="w-full h-auto max-h-[60vh] object-contain mx-auto" />
         </div>
         <div class="flex items-center justify-end gap-2">
-          <a id="downloadReactionBtn" href="#" download="2loud-reaction.jpg" class="px-4 py-2 rounded-xl text-xs font-extrabold uppercase tracking-wide text-black transition" style="background-color: var(--accent-color);">
+          <a id="downloadPhotoBtn" href="#" download="2loud-reaction.jpg" class="px-4 py-2 rounded-xl text-xs font-extrabold uppercase tracking-wide text-black transition" style="background-color: var(--accent-color);">
             Save Photo
           </a>
         </div>
       </div>
     </div>
 
-    <!-- Add Custom Preset Chip Modal -->
-    <div id="addPresetModal" class="hidden fixed inset-0 z-40 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
-      <div class="w-full max-w-sm rounded-3xl bg-surface border border-white/15 p-5 shadow-2xl">
-        <div class="flex items-center justify-between mb-3">
-          <h2 class="font-display font-extrabold text-base text-white">New Preset Chip</h2>
-          <button id="closePresetModalBtn" type="button" aria-label="Close modal" class="p-1.5 rounded-xl bg-elevated hover:bg-white/15 text-white/70 hover:text-white transition">
+    <!-- Add Custom Preset Modal -->
+    <div id="addPresetModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+      <div class="w-full max-w-sm rounded-3xl bg-surface border border-white/15 p-5 shadow-2xl space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="font-display font-extrabold text-base text-white">Add Custom Preset</h3>
+          <button id="closePresetModalBtn" type="button" aria-label="Close preset modal" class="p-1.5 rounded-xl bg-elevated hover:bg-white/15 text-white/75 hover:text-white transition">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -307,16 +315,36 @@
           </button>
         </div>
         <form id="addPresetForm" class="space-y-3">
-          <input id="newPresetInput" type="text" maxlength="60" required placeholder="Type a commonly used phrase, e.g. PLAY HOT2GO" class="w-full rounded-2xl bg-elevated border border-white/15 focus:border-white/40 focus:outline-none px-3.5 py-2.5 text-sm font-bold uppercase tracking-wide text-white placeholder:text-white/30 placeholder:normal-case placeholder:font-normal" />
+          <input id="newPresetInput" type="text" maxlength="60" placeholder="e.g., MEET AT THE BAR 🍹" class="w-full rounded-2xl bg-elevated border border-white/15 focus:border-white/40 focus:outline-none px-4 py-3 text-sm font-bold uppercase tracking-wide text-white placeholder:text-white/35 placeholder:normal-case placeholder:font-normal" />
           <div class="flex items-center justify-end gap-2 pt-1">
-            <button id="cancelPresetBtn" type="button" class="px-4 py-2 rounded-xl bg-elevated hover:bg-white/15 text-xs font-bold text-white/80 transition">
+            <button id="cancelPresetBtn" type="button" class="px-4 py-2 rounded-xl bg-elevated hover:bg-white/15 text-xs font-bold text-white/75 transition">
               Cancel
             </button>
             <button type="submit" class="px-4 py-2 rounded-xl text-xs font-extrabold uppercase tracking-wide text-black transition" style="background-color: var(--accent-color);">
-              Save Chip
+              Save Preset
             </button>
           </div>
         </form>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal (No browser confirm()) -->
+    <div id="confirmDeleteModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+      <div class="w-full max-w-xs rounded-3xl bg-surface border border-white/15 p-5 shadow-2xl space-y-4">
+        <div class="space-y-1.5">
+          <h3 id="confirmDeleteTitle" class="font-display font-extrabold text-base text-white">Are you sure?</h3>
+          <p id="confirmDeleteMessage" class="text-xs text-white/65 leading-relaxed">
+            This message will be permanently removed from your Recent history.
+          </p>
+        </div>
+        <div class="flex items-center justify-end gap-2 pt-1">
+          <button id="cancelDeleteBtn" type="button" class="px-4 py-2 rounded-xl bg-elevated hover:bg-white/15 text-xs font-bold text-white/80 transition">
+            Cancel
+          </button>
+          <button id="confirmDeleteBtn" type="button" class="px-4 py-2 rounded-xl bg-red-500 hover:bg-red-400 active:scale-95 text-xs font-extrabold uppercase tracking-wide text-white transition">
+            Delete
+          </button>
+        </div>
       </div>
     </div>
 
@@ -327,8 +355,12 @@
     </div>
   </div>
 
-  <script>
-    (function () {
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    (async function () {
       'use strict';
 
       // --- Default Venue Presets ---
@@ -341,19 +373,31 @@
         'WHAT DID YOU SAY?',
       ];
 
+      const COLOR_THEMES = {
+        '#39FF14': { glow: 'rgba(57, 255, 20, 0.42)', soft: 'rgba(57, 255, 20, 0.14)' },
+        '#FFFFFF': { glow: 'rgba(255, 255, 255, 0.35)', soft: 'rgba(255, 255, 255, 0.12)' },
+        '#FFE600': { glow: 'rgba(255, 230, 0, 0.4)', soft: 'rgba(255, 230, 0, 0.14)' },
+        '#00F0FF': { glow: 'rgba(0, 240, 255, 0.4)', soft: 'rgba(0, 240, 255, 0.14)' },
+        '#FF2A85': { glow: 'rgba(255, 42, 133, 0.42)', soft: 'rgba(255, 42, 133, 0.14)' },
+      };
+
       // --- Application State ---
       const state = {
         text: '',
         presets: [...DEFAULT_PRESETS],
         recent: [],
         activeColor: '#39FF14',
-        activeGlow: 'rgba(57, 255, 20, 0.42)',
-        activeSoft: 'rgba(57, 255, 20, 0.14)',
         isLandscape: false,
         isShowMode: false,
         isPulseActive: false,
-        isReactionCamArmed: false,
+        isCamArmed: false,
       };
+
+      // --- Firestore Persistence Setup ---
+      let db = null;
+      let auth = null;
+      let currentUser = null;
+      const appId = typeof __app_id !== 'undefined' ? __app_id : '2loud-default-app';
 
       // --- DOM Element References ---
       const topBar = document.getElementById('topBar');
@@ -367,10 +411,6 @@
       const billboardCaret = document.getElementById('billboardCaret');
       const showModeOverlayHint = document.getElementById('showModeOverlayHint');
       const exitShowModeBtn = document.getElementById('exitShowModeBtn');
-      const reactionCountdownPill = document.getElementById('reactionCountdownPill');
-      const reactionCountdownText = document.getElementById('reactionCountdownText');
-      const reactionVideo = document.getElementById('reactionVideo');
-      const reactionCanvas = document.getElementById('reactionCanvas');
 
       const bottomDock = document.getElementById('bottomDock');
       const presetStrip = document.getElementById('presetStrip');
@@ -380,8 +420,6 @@
       const landscapeLabel = document.getElementById('landscapeLabel');
       const pulseBtn = document.getElementById('pulseBtn');
       const pulseDot = document.getElementById('pulseDot');
-      const reactionCamBtn = document.getElementById('reactionCamBtn');
-      const reactionCamIcon = document.getElementById('reactionCamIcon');
       const replyClearBtn = document.getElementById('replyClearBtn');
 
       const messageInput = document.getElementById('messageInput');
@@ -394,27 +432,40 @@
       const recentList = document.getElementById('recentList');
       const clearHistoryBtn = document.getElementById('clearHistoryBtn');
 
-      const reactionPhotoModal = document.getElementById('reactionPhotoModal');
-      const closeReactionModalBtn = document.getElementById('closeReactionModalBtn');
-      const reactionModalCaption = document.getElementById('reactionModalCaption');
-      const reactionModalImg = document.getElementById('reactionModalImg');
-      const downloadReactionBtn = document.getElementById('downloadReactionBtn');
-
       const showModeBtn = document.getElementById('showModeBtn');
+      const reactionCamBtn = document.getElementById('reactionCamBtn');
+      const camArmedDot = document.getElementById('camArmedDot');
+      const camCountdownPill = document.getElementById('camCountdownPill');
+      const camCountdownText = document.getElementById('camCountdownText');
+      const reactionVideo = document.getElementById('reactionVideo');
+      const reactionCanvas = document.getElementById('reactionCanvas');
+      const photoPreviewModal = document.getElementById('photoPreviewModal');
+      const photoPreviewImg = document.getElementById('photoPreviewImg');
+      const photoPreviewCaption = document.getElementById('photoPreviewCaption');
+      const downloadPhotoBtn = document.getElementById('downloadPhotoBtn');
+      const closePhotoModalBtn = document.getElementById('closePhotoModalBtn');
+
       const addPresetModal = document.getElementById('addPresetModal');
       const closePresetModalBtn = document.getElementById('closePresetModalBtn');
       const cancelPresetBtn = document.getElementById('cancelPresetBtn');
       const addPresetForm = document.getElementById('addPresetForm');
       const newPresetInput = document.getElementById('newPresetInput');
 
+      const confirmDeleteModal = document.getElementById('confirmDeleteModal');
+      const confirmDeleteTitle = document.getElementById('confirmDeleteTitle');
+      const confirmDeleteMessage = document.getElementById('confirmDeleteMessage');
+      const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+      const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+
       const colorSwatches = document.querySelectorAll('.color-swatch');
       const toastBanner = document.getElementById('toastBanner');
 
       let toastTimeout = null;
+      let pendingDeleteAction = null;
       let fitRafId = null;
-      let cameraStream = null;
-      let reactionTimerId = null;
-      let reactionCountdownIntervalId = null;
+      let camStream = null;
+      let camCountdownTimer = null;
+      let camCaptureTimeout = null;
 
       // --- Toast & Focus Helpers ---
       function showToast(message) {
@@ -433,12 +484,186 @@
         if (!messageInput) return;
         try {
           messageInput.focus({ preventScroll: true });
-        } catch (_) {
+        } catch (err) {
           messageInput.focus();
         }
       }
 
-      // --- Message State & Recent History ---
+      // --- Theme & Reaction Camera Helpers ---
+      function applyColorTheme(hexColor) {
+        const theme = COLOR_THEMES[hexColor] || COLOR_THEMES['#39FF14'];
+        state.activeColor = hexColor;
+        document.documentElement.style.setProperty('--accent-color', hexColor);
+        document.documentElement.style.setProperty('--accent-glow', theme.glow);
+        document.documentElement.style.setProperty('--accent-soft', theme.soft);
+
+        colorSwatches.forEach((btn) => {
+          const btnColor = btn.getAttribute('data-color');
+          if (btnColor === hexColor) {
+            btn.classList.add('ring-2', 'ring-white', 'scale-105');
+            btn.classList.remove('opacity-75');
+          } else {
+            btn.classList.remove('ring-2', 'ring-white', 'scale-105');
+            btn.classList.add('opacity-75');
+          }
+        });
+      }
+
+      function clearPendingCamTimers() {
+        if (camCountdownTimer) {
+          clearInterval(camCountdownTimer);
+          camCountdownTimer = null;
+        }
+        if (camCaptureTimeout) {
+          clearTimeout(camCaptureTimeout);
+          camCaptureTimeout = null;
+        }
+        if (camCountdownPill) {
+          camCountdownPill.classList.add('hidden');
+        }
+      }
+
+      function updateCamButtonUI() {
+        if (!reactionCamBtn) return;
+        if (state.isCamArmed) {
+          reactionCamBtn.style.borderColor = 'var(--accent-color)';
+          reactionCamBtn.style.color = 'var(--accent-color)';
+          if (camArmedDot) camArmedDot.classList.remove('hidden');
+        } else {
+          reactionCamBtn.style.borderColor = '';
+          reactionCamBtn.style.color = '';
+          if (camArmedDot) camArmedDot.classList.add('hidden');
+        }
+      }
+
+      function stopReactionCam() {
+        clearPendingCamTimers();
+        if (camStream) {
+          camStream.getTracks().forEach((track) => track.stop());
+          camStream = null;
+        }
+        if (reactionVideo) {
+          reactionVideo.srcObject = null;
+        }
+        state.isCamArmed = false;
+        updateCamButtonUI();
+      }
+
+      async function toggleReactionCam() {
+        if (state.isCamArmed) {
+          stopReactionCam();
+          showToast('Reaction Cam off');
+          return;
+        }
+
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          showToast('Camera not supported on this browser');
+          return;
+        }
+
+        try {
+          try {
+            camStream = await navigator.mediaDevices.getUserMedia({
+              video: { facingMode: 'user' },
+              audio: false,
+            });
+          } catch (primaryErr) {
+            if (primaryErr && (primaryErr.name === 'NotFoundError' || primaryErr.name === 'OverconstrainedError')) {
+              camStream = await navigator.mediaDevices.getUserMedia({
+                video: true,
+                audio: false,
+              });
+            } else {
+              throw primaryErr;
+            }
+          }
+          if (reactionVideo) {
+            reactionVideo.srcObject = camStream;
+            await reactionVideo.play();
+          }
+          state.isCamArmed = true;
+          updateCamButtonUI();
+          showToast('Reaction Cam armed (3s after SHOW)');
+        } catch (err) {
+          state.isCamArmed = false;
+          updateCamButtonUI();
+          if (err && (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError')) {
+            showToast('No camera detected on this device');
+          } else if (err && (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError')) {
+            showToast('Camera permission denied');
+          } else {
+            showToast('Could not access camera');
+          }
+        }
+      }
+
+      function captureReactionSnapshot(targetEntryId) {
+        if (!camStream || !reactionVideo || !reactionCanvas) return;
+        const rawW = reactionVideo.videoWidth || 640;
+        const rawH = reactionVideo.videoHeight || 480;
+        // Scale down cleanly so snapshots stay lightweight for Firestore & memory
+        const maxDim = 480;
+        const scale = Math.min(1, maxDim / Math.max(rawW, rawH));
+        const width = Math.round(rawW * scale);
+        const height = Math.round(rawH * scale);
+
+        reactionCanvas.width = width;
+        reactionCanvas.height = height;
+        const ctx = reactionCanvas.getContext('2d');
+        if (!ctx) return;
+
+        // Mirror horizontally so front-facing selfie view looks natural
+        ctx.save();
+        ctx.translate(width, 0);
+        ctx.scale(-1, 1);
+        ctx.drawImage(reactionVideo, 0, 0, width, height);
+        ctx.restore();
+
+        const dataUrl = reactionCanvas.toDataURL('image/jpeg', 0.72);
+        attachPhotoToRecent(targetEntryId, dataUrl);
+        showToast('Reaction captured! 📸');
+      }
+
+      function startReactionCountdown(targetEntryId) {
+        if (!state.isCamArmed || !camStream) return;
+        clearPendingCamTimers();
+
+        let secondsLeft = 3;
+        if (camCountdownText) camCountdownText.textContent = `Reaction Cam in ${secondsLeft}s...`;
+        if (camCountdownPill) camCountdownPill.classList.remove('hidden');
+
+        camCountdownTimer = setInterval(() => {
+          secondsLeft -= 1;
+          if (secondsLeft > 0) {
+            if (camCountdownText) camCountdownText.textContent = `Reaction Cam in ${secondsLeft}s...`;
+          } else {
+            clearInterval(camCountdownTimer);
+            camCountdownTimer = null;
+          }
+        }, 1000);
+
+        camCaptureTimeout = setTimeout(() => {
+          if (camCountdownPill) camCountdownPill.classList.add('hidden');
+          captureReactionSnapshot(targetEntryId);
+          camCaptureTimeout = null;
+        }, 3000);
+      }
+
+      function openPhotoPreview(photoUrl, captionText) {
+        if (!photoPreviewModal || !photoPreviewImg) return;
+        photoPreviewImg.src = photoUrl;
+        if (photoPreviewCaption) photoPreviewCaption.textContent = captionText || '';
+        if (downloadPhotoBtn) {
+          downloadPhotoBtn.href = photoUrl;
+        }
+        photoPreviewModal.classList.remove('hidden');
+      }
+
+      function closePhotoPreview() {
+        if (photoPreviewModal) photoPreviewModal.classList.add('hidden');
+      }
+
+      // --- Message State & Unlimited Persistent Recent History ---
       function setMessageText(nextText, syncInput = true) {
         state.text = nextText || '';
         if (syncInput && messageInput && messageInput.value !== state.text) {
@@ -447,65 +672,127 @@
         scheduleFit();
       }
 
-      function addToRecent(phrase) {
-        const clean = (phrase || '').trim();
-        if (!clean) return null;
-        const entry = {
-          id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-          text: clean,
-          color: state.activeColor,
-          glow: state.activeGlow,
-          soft: state.activeSoft,
-          isPulseActive: state.isPulseActive,
-          isLandscape: state.isLandscape,
-          reactionPhoto: null,
-        };
-        state.recent = [
-          entry,
-          ...state.recent.filter(
-            (item) =>
-              !(
-                item.text === entry.text &&
-                item.color === entry.color &&
-                item.isPulseActive === entry.isPulseActive &&
-                item.isLandscape === entry.isLandscape &&
-                !item.reactionPhoto
-              )
-          ),
-        ].slice(0, 20);
-        updateRecentBadge();
-        renderRecentList();
-        return entry;
+      async function savePresetsToCloud() {
+        if (!db || !currentUser) return;
+        try {
+          const prefsRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'settings', 'preferences');
+          await setDoc(prefsRef, { presets: state.presets, updatedAt: Date.now() }, { merge: true });
+        } catch (err) {
+          console.error('Error saving presets:', err);
+        }
       }
 
-      function attachReactionPhotoToRecent(entryId, dataUrl) {
-        if (!entryId || !dataUrl) return;
+      async function attachPhotoToRecent(entryId, photoDataUrl) {
+        if (!entryId || !photoDataUrl) return;
         const target = state.recent.find((item) => item.id === entryId);
         if (target) {
-          target.reactionPhoto = dataUrl;
+          target.photo = photoDataUrl;
           renderRecentList();
+        }
+
+        if (!db || !currentUser) return;
+        try {
+          const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'recentMessages', entryId);
+          await setDoc(docRef, { photo: photoDataUrl }, { merge: true });
+        } catch (err) {
+          console.error('Error saving reaction snapshot:', err);
+        }
+      }
+
+      async function addToRecent(phrase) {
+        const clean = (phrase || '').trim();
+        if (!clean) return null;
+
+        const now = Date.now();
+        const entryId = `msg_${now}_${Math.random().toString(36).slice(2, 8)}`;
+
+        // Check for an existing item with the same text and settings to bump to top without duplicates
+        const duplicate = state.recent.find(
+          (item) =>
+            item.text === clean &&
+            item.color === state.activeColor &&
+            Boolean(item.isPulseActive) === state.isPulseActive &&
+            Boolean(item.isLandscape) === state.isLandscape
+        );
+
+        const targetId = duplicate ? duplicate.id : entryId;
+        const existingPhoto = duplicate ? duplicate.photo || null : null;
+
+        const newEntry = {
+          id: targetId,
+          text: clean,
+          color: state.activeColor,
+          isPulseActive: state.isPulseActive,
+          isLandscape: state.isLandscape,
+          photo: existingPhoto,
+          updatedAt: now,
+        };
+
+        state.recent = [newEntry, ...state.recent.filter((item) => item.id !== targetId)];
+        updateRecentBadge();
+        renderRecentList();
+
+        if (db && currentUser) {
+          try {
+            const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'recentMessages', targetId);
+            await setDoc(docRef, {
+              text: newEntry.text,
+              color: newEntry.color,
+              isPulseActive: newEntry.isPulseActive,
+              isLandscape: newEntry.isLandscape,
+              photo: newEntry.photo || null,
+              updatedAt: newEntry.updatedAt,
+            });
+          } catch (err) {
+            console.error('Error saving recent message:', err);
+          }
+        }
+
+        return targetId;
+      }
+
+      async function deleteRecentItem(itemId) {
+        if (!itemId) return;
+        state.recent = state.recent.filter((item) => item.id !== itemId);
+        updateRecentBadge();
+        renderRecentList();
+        showToast('Message removed');
+
+        if (!db || !currentUser) return;
+        try {
+          const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'recentMessages', itemId);
+          await deleteDoc(docRef);
+        } catch (err) {
+          console.error('Error deleting recent message:', err);
+        }
+      }
+
+      async function clearAllRecentItems() {
+        const itemsToDelete = [...state.recent];
+        state.recent = [];
+        updateRecentBadge();
+        renderRecentList();
+        showToast('History cleared');
+
+        if (!db || !currentUser || !itemsToDelete.length) return;
+        try {
+          // Delete in batches of 450 to stay safely within Firestore batch limits
+          for (let i = 0; i < itemsToDelete.length; i += 450) {
+            const batch = writeBatch(db);
+            itemsToDelete.slice(i, i + 450).forEach((item) => {
+              const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'recentMessages', item.id);
+              batch.delete(docRef);
+            });
+            await batch.commit();
+          }
+        } catch (err) {
+          console.error('Error clearing recent history:', err);
         }
       }
 
       function updateRecentBadge() {
         if (!recentBadge) return;
         recentBadge.textContent = String(state.recent.length);
-      }
-
-      function openReactionModal(photoUrl, caption) {
-        if (!reactionPhotoModal || !reactionModalImg) return;
-        reactionModalImg.src = photoUrl;
-        if (reactionModalCaption) reactionModalCaption.textContent = caption || '';
-        if (downloadReactionBtn) {
-          downloadReactionBtn.href = photoUrl;
-        }
-        reactionPhotoModal.classList.remove('hidden');
-      }
-
-      function closeReactionModal() {
-        if (reactionPhotoModal) {
-          reactionPhotoModal.classList.add('hidden');
-        }
       }
 
       function renderRecentList() {
@@ -515,54 +802,55 @@
         if (!state.recent.length) {
           const emptyEl = document.createElement('p');
           emptyEl.className = 'text-xs text-white/40 text-center py-6';
-          emptyEl.textContent = 'No recent messages yet. Tap SHOW to save one.';
+          emptyEl.textContent = 'No recent messages yet. Tap SHOW on a message to save it here.';
           recentList.appendChild(emptyEl);
           return;
         }
 
         state.recent.forEach((item) => {
           const row = document.createElement('div');
-          row.className = 'w-full flex items-center gap-2 rounded-2xl bg-elevated hover:bg-white/15 border border-white/10 transition overflow-hidden';
+          row.className = 'flex items-center gap-2 rounded-2xl bg-elevated border border-white/10 hover:border-white/25 transition overflow-hidden';
 
-          const itemBtn = document.createElement('button');
-          itemBtn.type = 'button';
-          itemBtn.className = 'flex-1 min-w-0 flex items-center justify-between gap-2.5 text-left px-3.5 py-2.5 active:scale-[0.99] transition';
+          const selectBtn = document.createElement('button');
+          selectBtn.type = 'button';
+          selectBtn.className = 'flex-1 min-w-0 flex items-center justify-between gap-2 text-left pl-3.5 pr-2 py-2.5 hover:bg-white/10 active:scale-[0.99] transition';
 
           const leftWrap = document.createElement('div');
           leftWrap.className = 'flex items-center gap-2.5 min-w-0';
 
           const colorDot = document.createElement('span');
-          colorDot.className = 'w-3 h-3 rounded-full shrink-0';
-          colorDot.style.backgroundColor = item.color;
-          colorDot.style.boxShadow = `0 0 8px ${item.glow}`;
+          colorDot.className = 'shrink-0 w-2.5 h-2.5 rounded-full';
+          colorDot.style.backgroundColor = item.color || '#39FF14';
 
           const textSpan = document.createElement('span');
-          textSpan.className = 'text-sm font-bold uppercase tracking-wide text-white truncate';
+          textSpan.className = 'truncate text-sm font-bold uppercase tracking-wide text-white';
           textSpan.textContent = item.text;
 
           leftWrap.appendChild(colorDot);
           leftWrap.appendChild(textSpan);
 
-          const metaWrap = document.createElement('div');
-          metaWrap.className = 'flex items-center gap-1.5 shrink-0 text-[10px] font-bold uppercase tracking-wider text-white/55';
+          const badgesWrap = document.createElement('div');
+          badgesWrap.className = 'shrink-0 flex items-center gap-1';
 
-          if (item.isPulseActive) {
-            const pulseTag = document.createElement('span');
-            pulseTag.className = 'px-1.5 py-0.5 rounded-md bg-white/10 text-white/80';
-            pulseTag.textContent = 'Pulse';
-            metaWrap.appendChild(pulseTag);
+          if (item.isLandscape) {
+            const landBadge = document.createElement('span');
+            landBadge.className = 'px-1.5 py-0.5 rounded-md bg-white/10 text-[10px] font-bold text-white/70';
+            landBadge.textContent = 'LANDSCAPE';
+            badgesWrap.appendChild(landBadge);
           }
 
-          const orientTag = document.createElement('span');
-          orientTag.className = 'px-1.5 py-0.5 rounded-md bg-white/10 text-white/75';
-          orientTag.textContent = item.isLandscape ? 'Landscape' : 'Portrait';
-          metaWrap.appendChild(orientTag);
+          if (item.isPulseActive) {
+            const pulseBadge = document.createElement('span');
+            pulseBadge.className = 'px-1.5 py-0.5 rounded-md bg-white/10 text-[10px] font-bold text-white/70';
+            pulseBadge.textContent = 'PULSE';
+            badgesWrap.appendChild(pulseBadge);
+          }
 
-          itemBtn.appendChild(leftWrap);
-          itemBtn.appendChild(metaWrap);
+          selectBtn.appendChild(leftWrap);
+          selectBtn.appendChild(badgesWrap);
 
-          itemBtn.addEventListener('click', () => {
-            applyAccentColor(item.color, item.glow, item.soft);
+          selectBtn.addEventListener('click', () => {
+            applyColorTheme(item.color || '#39FF14');
             setPulseState(Boolean(item.isPulseActive));
             setLandscapeState(Boolean(item.isLandscape));
             setMessageText(item.text);
@@ -570,181 +858,107 @@
             focusMessageInput();
           });
 
-          row.appendChild(itemBtn);
+          row.appendChild(selectBtn);
 
-          if (item.reactionPhoto) {
+          // Clickable reaction photo thumbnail if captured
+          if (item.photo) {
             const thumbBtn = document.createElement('button');
             thumbBtn.type = 'button';
-            thumbBtn.title = 'View captured reaction';
-            thumbBtn.className = 'shrink-0 mr-2 w-10 h-10 rounded-xl overflow-hidden border border-white/25 hover:scale-105 active:scale-95 transition';
-            const img = document.createElement('img');
-            img.src = item.reactionPhoto;
-            img.alt = 'Reaction photo';
-            img.className = 'w-full h-full object-cover';
-            thumbBtn.appendChild(img);
+            thumbBtn.setAttribute('aria-label', 'View reaction snapshot');
+            thumbBtn.title = 'View reaction snapshot';
+            thumbBtn.className = 'shrink-0 w-9 h-9 rounded-xl overflow-hidden border border-white/20 hover:border-white/50 active:scale-95 transition';
+            const thumbImg = document.createElement('img');
+            thumbImg.src = item.photo;
+            thumbImg.alt = 'Reaction';
+            thumbImg.className = 'w-full h-full object-cover';
+            thumbBtn.appendChild(thumbImg);
             thumbBtn.addEventListener('click', (e) => {
               e.stopPropagation();
-              openReactionModal(item.reactionPhoto, item.text);
+              openPhotoPreview(item.photo, item.text);
             });
             row.appendChild(thumbBtn);
           }
 
+          // Individual delete button for this recent message
+          const deleteBtn = document.createElement('button');
+          deleteBtn.type = 'button';
+          deleteBtn.setAttribute('aria-label', `Delete ${item.text}`);
+          deleteBtn.title = 'Delete message';
+          deleteBtn.className = 'shrink-0 p-2.5 mr-1 rounded-xl text-white/45 hover:text-red-400 hover:bg-white/10 active:scale-95 transition';
+          deleteBtn.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+              <path d="M10 11v6"></path>
+              <path d="M14 11v6"></path>
+              <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+            </svg>
+          `;
+          deleteBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openDeleteConfirmation({
+              title: 'Are you sure?',
+              message: `Delete "${item.text}" from your Recent history?`,
+              confirmLabel: 'Delete',
+              onConfirm: () => deleteRecentItem(item.id),
+            });
+          });
+
+          row.appendChild(deleteBtn);
           recentList.appendChild(row);
         });
       }
 
-      // --- Front-Facing Reaction Cam Controller ---
-      function clearReactionTimers() {
-        if (reactionTimerId !== null) {
-          clearTimeout(reactionTimerId);
-          reactionTimerId = null;
+      // --- Delete Confirmation Modal Handlers ---
+      function openDeleteConfirmation({ title, message, confirmLabel, onConfirm }) {
+        if (!confirmDeleteModal) return;
+        pendingDeleteAction = typeof onConfirm === 'function' ? onConfirm : null;
+        if (confirmDeleteTitle) confirmDeleteTitle.textContent = title || 'Are you sure?';
+        if (confirmDeleteMessage) {
+          confirmDeleteMessage.textContent = message || 'This action cannot be undone.';
         }
-        if (reactionCountdownIntervalId !== null) {
-          clearInterval(reactionCountdownIntervalId);
-          reactionCountdownIntervalId = null;
+        if (confirmDeleteBtn) {
+          confirmDeleteBtn.textContent = confirmLabel || 'Delete';
         }
-        if (reactionCountdownPill) {
-          reactionCountdownPill.classList.add('hidden');
+        confirmDeleteModal.classList.remove('hidden');
+      }
+
+      function closeDeleteConfirmation() {
+        pendingDeleteAction = null;
+        if (confirmDeleteModal) {
+          confirmDeleteModal.classList.add('hidden');
         }
       }
 
-      function stopCameraStream() {
-        if (cameraStream) {
-          cameraStream.getTracks().forEach((track) => track.stop());
-          cameraStream = null;
-        }
-        if (reactionVideo) {
-          reactionVideo.srcObject = null;
-        }
-      }
-
-      function updateReactionCamButtonUI() {
-        if (!reactionCamBtn) return;
-        if (state.isReactionCamArmed) {
-          reactionCamBtn.style.borderColor = 'var(--accent-color)';
-          reactionCamBtn.style.backgroundColor = 'var(--accent-soft)';
-          if (reactionCamIcon) reactionCamIcon.style.color = 'var(--accent-color)';
-        } else {
-          reactionCamBtn.style.borderColor = '';
-          reactionCamBtn.style.backgroundColor = '';
-          if (reactionCamIcon) reactionCamIcon.style.color = '';
-        }
-      }
-
-      async function toggleReactionCam() {
-        if (state.isReactionCamArmed) {
-          state.isReactionCamArmed = false;
-          clearReactionTimers();
-          stopCameraStream();
-          updateReactionCamButtonUI();
-          showToast('Reaction Cam off');
-          return;
-        }
-
-        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-          showToast('Camera unavailable in this browser');
-          return;
-        }
-
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: 'user' },
-            audio: false,
-          });
-          cameraStream = stream;
-          if (reactionVideo) {
-            reactionVideo.srcObject = stream;
-            await reactionVideo.play().catch(() => {});
-          }
-          state.isReactionCamArmed = true;
-          updateReactionCamButtonUI();
-          showToast('Reaction Cam armed — snaps 3s after SHOW');
-        } catch (err) {
-          console.error('Front camera permission denied or unavailable:', err);
-          state.isReactionCamArmed = false;
-          updateReactionCamButtonUI();
-          showToast('Could not access front camera');
-        }
-      }
-
-      function captureReactionSnapshot(entryId) {
-        try {
-          if (!reactionVideo || !reactionCanvas || !cameraStream) return;
-          const width = reactionVideo.videoWidth || 640;
-          const height = reactionVideo.videoHeight || 480;
-          reactionCanvas.width = width;
-          reactionCanvas.height = height;
-          const ctx = reactionCanvas.getContext('2d');
-          if (!ctx) return;
-
-          // Mirror horizontally so the front-facing selfie matches natural expectation
-          ctx.save();
-          ctx.translate(width, 0);
-          ctx.scale(-1, 1);
-          ctx.drawImage(reactionVideo, 0, 0, width, height);
-          ctx.restore();
-
-          const dataUrl = reactionCanvas.toDataURL('image/jpeg', 0.85);
-          attachReactionPhotoToRecent(entryId, dataUrl);
-          showToast('Reaction captured! View in Recent');
-        } catch (err) {
-          console.error('Failed to capture reaction snapshot:', err);
-        }
-      }
-
-      function startReactionCountdown(entryId) {
-        clearReactionTimers();
-        if (!state.isReactionCamArmed || !cameraStream) return;
-
-        let secondsLeft = 3;
-        if (reactionCountdownPill && reactionCountdownText) {
-          reactionCountdownText.textContent = `Reaction Cam: ${secondsLeft}s`;
-          reactionCountdownPill.classList.remove('hidden');
-        }
-
-        reactionCountdownIntervalId = setInterval(() => {
-          secondsLeft -= 1;
-          if (secondsLeft > 0 && reactionCountdownText) {
-            reactionCountdownText.textContent = `Reaction Cam: ${secondsLeft}s`;
-          }
-        }, 1000);
-
-        reactionTimerId = setTimeout(() => {
-          clearReactionTimers();
-          captureReactionSnapshot(entryId);
-        }, 3000);
-      }
-
-      // --- Word-Wrap + Dynamic Auto-Scaling Typography Engine ---
-      /**
-       * Scales the message text so it wraps cleanly between whole words and fills
-       * the maximum available width and height of the billboard container without
-       * clipping or overflowing in portrait or landscape mode.
-       */
+      // --- Dynamic Auto-Scaling Font Solver (Word-Aware Wrapping) ---
       function fitTextToBillboard() {
         try {
-          if (!billboardStage || !rotatableContainer || !textFitBox || !billboardText || !billboardTextContent || !emptyPrompt) {
+          if (!billboardStage || !rotatableContainer || !textFitBox || !billboardText || !billboardTextContent) {
             return;
           }
 
-          const cleanText = (state.text || '').trim();
+          const rawText = state.text;
+          const trimmedText = rawText.trim();
+          billboardTextContent.textContent = rawText;
 
-          if (!cleanText) {
-            emptyPrompt.classList.remove('hidden');
-            billboardText.classList.add('hidden');
-            billboardTextContent.textContent = '';
+          if (!trimmedText) {
+            if (emptyPrompt) emptyPrompt.classList.remove('hidden');
+            billboardText.style.fontSize = '48px';
+            billboardText.style.width = 'auto';
+            billboardText.style.display = 'inline-block';
+            if (billboardCaret) {
+              billboardCaret.style.visibility = state.isShowMode ? 'hidden' : 'visible';
+            }
             return;
           }
 
-          emptyPrompt.classList.add('hidden');
-          billboardText.classList.remove('hidden');
-          billboardTextContent.textContent = state.text;
+          if (emptyPrompt) emptyPrompt.classList.add('hidden');
 
           const stageRect = billboardStage.getBoundingClientRect();
-          if (stageRect.width <= 0 || stageRect.height <= 0) return;
+          if (!stageRect || stageRect.width <= 0 || stageRect.height <= 0) return;
 
           const horizontalPad = 24;
-          const verticalPad = state.isShowMode ? 68 : 20;
+          const verticalPad = state.isShowMode ? 56 : 20;
 
           // Measure the outer stage rect and use its unrotated dimensions as the
           // true visual bounding box so rotating 90deg never measures a mid-transition
@@ -915,37 +1129,18 @@
       }
 
       // --- Controls: Landscape, SHOW Mode, Pulse, Reply / Clear ---
-      function setLandscapeState(nextLandscape) {
-        state.isLandscape = Boolean(nextLandscape);
-        if (state.isLandscape) {
-          if (rotatableContainer) rotatableContainer.classList.add('landscape-rotated');
-          if (landscapeBtn) landscapeBtn.style.borderColor = 'var(--accent-color)';
-          if (landscapeIcon) {
-            landscapeIcon.style.transform = 'rotate(90deg)';
-            landscapeIcon.style.color = 'var(--accent-color)';
-          }
-          if (landscapeLabel) landscapeLabel.textContent = 'Portrait';
-        } else {
-          if (rotatableContainer) rotatableContainer.classList.remove('landscape-rotated');
-          if (landscapeBtn) landscapeBtn.style.borderColor = '';
-          if (landscapeIcon) {
-            landscapeIcon.style.transform = 'rotate(0deg)';
-            landscapeIcon.style.color = '';
-          }
-          if (landscapeLabel) landscapeLabel.textContent = 'Landscape';
-        }
-        handleOrientationChange();
-      }
-
       function toggleLandscape() {
         setLandscapeState(!state.isLandscape);
       }
 
       function enterShowMode() {
         const current = state.text.trim();
-        let savedEntry = null;
+        let entryId = null;
         if (current) {
-          savedEntry = addToRecent(current);
+          addToRecent(current);
+          if (state.recent.length > 0) {
+            entryId = state.recent[0].id;
+          }
         }
         state.isShowMode = true;
         if (topBar) topBar.classList.add('hidden');
@@ -955,14 +1150,14 @@
         if (showModeOverlayHint) showModeOverlayHint.classList.remove('hidden');
         scheduleFit();
 
-        if (state.isReactionCamArmed && cameraStream) {
-          startReactionCountdown(savedEntry ? savedEntry.id : null);
+        if (state.isCamArmed) {
+          startReactionCountdown(entryId);
         }
       }
 
       function exitShowMode() {
         if (!state.isShowMode) return;
-        clearReactionTimers();
+        clearPendingCamTimers();
         state.isShowMode = false;
         if (topBar) topBar.classList.remove('hidden');
         if (bottomDock) bottomDock.classList.remove('hidden');
@@ -972,50 +1167,8 @@
         scheduleFit();
       }
 
-      function setPulseState(nextPulse) {
-        state.isPulseActive = Boolean(nextPulse);
-        if (state.isPulseActive) {
-          if (billboardStage) billboardStage.classList.add('pulse-active');
-          if (pulseBtn) pulseBtn.style.borderColor = 'var(--accent-color)';
-          if (pulseDot) {
-            pulseDot.style.backgroundColor = 'var(--accent-color)';
-            pulseDot.style.boxShadow = '0 0 8px var(--accent-glow)';
-          }
-        } else {
-          if (billboardStage) billboardStage.classList.remove('pulse-active');
-          if (pulseBtn) pulseBtn.style.borderColor = '';
-          if (pulseDot) {
-            pulseDot.style.backgroundColor = 'rgba(255, 255, 255, 0.4)';
-            pulseDot.style.boxShadow = 'none';
-          }
-        }
-      }
-
       function togglePulse() {
         setPulseState(!state.isPulseActive);
-      }
-
-      function applyAccentColor(color, glow, soft) {
-        state.activeColor = color;
-        state.activeGlow = glow;
-        state.activeSoft = soft;
-
-        document.documentElement.style.setProperty('--accent-color', color);
-        document.documentElement.style.setProperty('--accent-glow', glow);
-        document.documentElement.style.setProperty('--accent-soft', soft);
-
-        colorSwatches.forEach((s) => {
-          const swatchColor = s.getAttribute('data-color');
-          if (swatchColor && swatchColor.toLowerCase() === color.toLowerCase()) {
-            s.classList.remove('opacity-75');
-            s.classList.add('ring-2', 'ring-white', 'scale-105');
-          } else {
-            s.classList.remove('ring-2', 'ring-white', 'scale-105');
-            s.classList.add('opacity-75');
-          }
-        });
-        updateReactionCamButtonUI();
-        scheduleFit();
       }
 
       function handleReplyClear() {
@@ -1073,10 +1226,16 @@
 
       if (landscapeBtn) landscapeBtn.addEventListener('click', toggleLandscape);
       if (pulseBtn) pulseBtn.addEventListener('click', togglePulse);
-      if (reactionCamBtn) reactionCamBtn.addEventListener('click', toggleReactionCam);
       if (replyClearBtn) replyClearBtn.addEventListener('click', handleReplyClear);
 
       if (showModeBtn) showModeBtn.addEventListener('click', enterShowMode);
+      if (reactionCamBtn) reactionCamBtn.addEventListener('click', toggleReactionCam);
+      if (closePhotoModalBtn) closePhotoModalBtn.addEventListener('click', closePhotoPreview);
+      if (photoPreviewModal) {
+        photoPreviewModal.addEventListener('click', (e) => {
+          if (e.target === photoPreviewModal) closePhotoPreview();
+        });
+      }
       if (exitShowModeBtn) {
         exitShowModeBtn.addEventListener('click', (e) => {
           e.stopPropagation();
@@ -1093,16 +1252,29 @@
       }
       if (clearHistoryBtn) {
         clearHistoryBtn.addEventListener('click', () => {
-          state.recent = [];
-          updateRecentBadge();
-          renderRecentList();
+          if (!state.recent.length) return;
+          openDeleteConfirmation({
+            title: 'Are you sure?',
+            message: `Clear all ${state.recent.length} recent message${state.recent.length === 1 ? '' : 's'} from your history?`,
+            confirmLabel: 'Clear All',
+            onConfirm: () => clearAllRecentItems(),
+          });
         });
       }
 
-      if (closeReactionModalBtn) closeReactionModalBtn.addEventListener('click', closeReactionModal);
-      if (reactionPhotoModal) {
-        reactionPhotoModal.addEventListener('click', (e) => {
-          if (e.target === reactionPhotoModal) closeReactionModal();
+      if (cancelDeleteBtn) {
+        cancelDeleteBtn.addEventListener('click', closeDeleteConfirmation);
+      }
+      if (confirmDeleteBtn) {
+        confirmDeleteBtn.addEventListener('click', () => {
+          const action = pendingDeleteAction;
+          closeDeleteConfirmation();
+          if (action) action();
+        });
+      }
+      if (confirmDeleteModal) {
+        confirmDeleteModal.addEventListener('click', (e) => {
+          if (e.target === confirmDeleteModal) closeDeleteConfirmation();
         });
       }
 
@@ -1121,9 +1293,10 @@
           if (!phrase) return;
           state.presets.unshift(phrase);
           renderPresets();
+          savePresetsToCloud();
           setMessageText(phrase);
           closeAddPresetModal();
-          showToast('Preset chip added');
+          showToast('Preset chip saved');
         });
       }
 
@@ -1131,9 +1304,7 @@
       colorSwatches.forEach((swatch) => {
         swatch.addEventListener('click', () => {
           const color = swatch.getAttribute('data-color');
-          const glow = swatch.getAttribute('data-glow');
-          const soft = swatch.getAttribute('data-soft');
-          applyAccentColor(color, glow, soft);
+          applyColorTheme(color);
         });
       });
 
@@ -1176,6 +1347,79 @@
         });
       } else {
         triggerFontReadyFit();
+      }
+
+      // --- Initialize Firebase Auth & Real-Time Firestore Sync ---
+      try {
+        if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+          const firebaseConfig = JSON.parse(__firebase_config);
+          const app = initializeApp(firebaseConfig);
+          db = getFirestore(app);
+          auth = getAuth(app);
+
+          if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+            const cred = await signInWithCustomToken(auth, __initial_auth_token);
+            currentUser = cred.user;
+          } else {
+            const cred = await signInAnonymously(auth);
+            currentUser = cred.user;
+          }
+
+          if (currentUser) {
+            // Listen to all saved recent messages (no artificial cap)
+            const recentColRef = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'recentMessages');
+            onSnapshot(
+              recentColRef,
+              (snapshot) => {
+                const loaded = [];
+                snapshot.forEach((docSnap) => {
+                  const data = docSnap.data();
+                  if (data && data.text) {
+                    loaded.push({
+                      id: docSnap.id,
+                      text: data.text,
+                      color: data.color || '#39FF14',
+                      isPulseActive: Boolean(data.isPulseActive),
+                      isLandscape: Boolean(data.isLandscape),
+                      photo: data.photo || null,
+                      updatedAt: Number(data.updatedAt) || 0,
+                    });
+                  }
+                });
+                // Sort newest-first in JavaScript memory
+                loaded.sort((a, b) => b.updatedAt - a.updatedAt);
+                state.recent = loaded;
+                updateRecentBadge();
+                if (recentDrawer && !recentDrawer.classList.contains('hidden')) {
+                  renderRecentList();
+                }
+              },
+              (error) => {
+                console.error('Error syncing recent messages:', error);
+              }
+            );
+
+            // Listen to saved custom presets
+            const prefsDocRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'settings', 'preferences');
+            onSnapshot(
+              prefsDocRef,
+              (docSnap) => {
+                if (docSnap.exists()) {
+                  const data = docSnap.data();
+                  if (Array.isArray(data.presets) && data.presets.length > 0) {
+                    state.presets = data.presets;
+                    renderPresets();
+                  }
+                }
+              },
+              (error) => {
+                console.error('Error syncing presets:', error);
+              }
+            );
+          }
+        }
+      } catch (err) {
+        console.error('Cloud persistence initialization skipped or failed:', err);
       }
     })();
   </script>
