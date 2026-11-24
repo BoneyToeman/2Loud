@@ -922,13 +922,20 @@
       function triggerBpmBackgroundDance(intensity, isBeatHit) {
         if (!billboardStage || !state.isPulseActive || state.pulseEffect !== 'bpm') return;
         const clamped = Math.max(0, Math.min(1, intensity));
-        const bgAlpha = isBeatHit ? Math.min(0.28, 0.1 + clamped * 0.18) : clamped * 0.09;
-        const glowBlur = Math.round(14 + clamped * 44);
-        const glowSpread = Math.round(2 + clamped * 8);
+        const bgAlpha = isBeatHit ? Math.min(0.32, 0.12 + clamped * 0.2) : clamped * 0.12;
+        const glowBlur = Math.round(18 + clamped * 52);
+        const glowSpread = Math.round(3 + clamped * 10);
 
         billboardStage.style.backgroundColor = `color-mix(in srgb, var(--accent-color) ${Math.round(bgAlpha * 100)}%, #000000)`;
-        billboardStage.style.boxShadow = `inset 0 0 ${glowBlur}px ${glowSpread}px var(--accent-glow), 0 0 ${Math.round(glowBlur * 0.55)}px var(--accent-soft)`;
-        billboardStage.style.borderColor = isBeatHit || clamped > 0.45 ? 'var(--accent-color)' : 'rgba(255, 255, 255, 0.14)';
+        billboardStage.style.boxShadow = `inset 0 0 ${glowBlur}px ${glowSpread}px var(--accent-glow), 0 0 ${Math.round(glowBlur * 0.6)}px var(--accent-soft)`;
+        billboardStage.style.borderColor = isBeatHit || clamped > 0.35 ? 'var(--accent-color)' : 'rgba(255, 255, 255, 0.16)';
+
+        if (bpmFillWash) {
+          const washOpacity = isBeatHit
+            ? Math.min(0.45, 0.14 + clamped * 0.31)
+            : Math.min(0.28, clamped * 0.28);
+          bpmFillWash.style.opacity = washOpacity.toFixed(3);
+        }
 
         if (bpmDanceDecayTimer) {
           clearTimeout(bpmDanceDecayTimer);
@@ -936,9 +943,12 @@
         bpmDanceDecayTimer = setTimeout(() => {
           if (!billboardStage || !state.isPulseActive || state.pulseEffect !== 'bpm') return;
           billboardStage.style.backgroundColor = '#000000';
-          billboardStage.style.boxShadow = 'inset 0 0 10px 1px var(--accent-soft)';
-          billboardStage.style.borderColor = 'rgba(255, 255, 255, 0.1)';
-        }, 120);
+          billboardStage.style.boxShadow = 'inset 0 0 12px 1px var(--accent-soft)';
+          billboardStage.style.borderColor = 'rgba(255, 255, 255, 0.12)';
+          if (bpmFillWash) {
+            bpmFillWash.style.opacity = '0';
+          }
+        }, 130);
       }
 
       function setPulseMenuOpen(open) {
@@ -1087,41 +1097,41 @@
         const overallRms = binCount > 0 ? Math.sqrt(allSqSum / binCount) : 0;
 
         // Track steady ambient background noise (like room fans) slowly so constant hum is rejected
-        if (lowRms < micNoiseFloorRms * 1.35) {
-          micNoiseFloorRms = micNoiseFloorRms * 0.97 + Math.max(0.008, lowRms) * 0.03;
+        if (lowRms < micNoiseFloorRms * 1.25) {
+          micNoiseFloorRms = micNoiseFloorRms * 0.96 + Math.max(0.004, lowRms) * 0.04;
         } else {
-          micNoiseFloorRms = micNoiseFloorRms * 0.996 + lowRms * 0.004;
+          micNoiseFloorRms = micNoiseFloorRms * 0.995 + lowRms * 0.005;
         }
 
         // Map relative audio level onto a practical 35 dB (room tone + slight margin) to 120 dB (concert ceiling) scale
-        const floorRef = Math.max(0.012, micNoiseFloorRms * 1.15);
+        const floorRef = Math.max(0.006, micNoiseFloorRms * 1.1);
         const safeRms = Math.max(floorRef, overallRms);
         const dbGain = 20 * Math.log10(safeRms / floorRef);
         // Anchor room tone baseline just above 35-40 dB (38 dB) and scale up to 120 dB at heavy peak
-        const estimatedDb = Math.max(35, Math.min(120, 38 + dbGain * 1.85));
+        const estimatedDb = Math.max(35, Math.min(120, 38 + dbGain * 2.4));
 
         // Dynamic range normalization:
-        // Low end (~38-42 dB) = minimal/off (0.0); High end (~112-120 dB) = full screen intensity (1.0)
-        const minActiveDb = 42;
-        const maxFullDb = 115;
+        // Low end (~38-40 dB) = minimal/off (0.0); High end (~105-115 dB) = full screen intensity (1.0)
+        const minActiveDb = 40;
+        const maxFullDb = 110;
         const dynamicIntensity = Math.max(
           0,
           Math.min(1, (estimatedDb - minActiveDb) / (maxFullDb - minActiveDb))
         );
 
         micEnergyHistory.push(avgEnergy);
-        if (micEnergyHistory.length > 50) {
+        if (micEnergyHistory.length > 40) {
           micEnergyHistory.shift();
         }
 
         const rollingAvg =
           micEnergyHistory.reduce((acc, v) => acc + v, 0) / micEnergyHistory.length;
 
-        // Higher threshold & stronger margin above rolling average so steady fan noise doesn't trigger beats
+        // Balanced threshold: rejects steady room/fan hum while catching music kick/bass hits
         const nowMs = performance.now();
-        const minBeatGapMs = 320;
-        const noiseGateEnergy = Math.max(58, micNoiseFloorRms * 255 * 1.65);
-        const beatThreshold = Math.max(noiseGateEnergy, rollingAvg * 1.48);
+        const minBeatGapMs = 280;
+        const noiseGateEnergy = Math.max(22, micNoiseFloorRms * 255 * 1.35);
+        const beatThreshold = Math.max(noiseGateEnergy, rollingAvg * 1.22);
         const isBeatHit =
           estimatedDb >= minActiveDb &&
           avgEnergy > beatThreshold &&
