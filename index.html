@@ -208,14 +208,27 @@
 
     <!-- Bottom Control Dock: Presets, Action Bar & Fast Input -->
     <section id="bottomDock" class="relative z-20 shrink-0 flex flex-col gap-2 px-3 pt-2 pb-3 bg-surface/95 border-t border-white/10 backdrop-blur-md">
-      <!-- Horizontal Preset Strip + '+ Add' -->
-      <div id="presetStrip" class="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5" aria-label="Quick venue presets">
-        <button type="button" data-preset="LOUDER PLEASE 🔊" class="shrink-0 px-3 py-1.5 rounded-full bg-elevated hover:bg-white/15 active:scale-95 border border-white/12 text-xs font-bold uppercase tracking-wide text-white/90 transition">LOUDER PLEASE 🔊</button>
-        <button type="button" data-preset="WHAT DID YOU SAY? 👂" class="shrink-0 px-3 py-1.5 rounded-full bg-elevated hover:bg-white/15 active:scale-95 border border-white/12 text-xs font-bold uppercase tracking-wide text-white/90 transition">WHAT DID YOU SAY? 👂</button>
-        <button type="button" data-preset="OVER HERE! 👋" class="shrink-0 px-3 py-1.5 rounded-full bg-elevated hover:bg-white/15 active:scale-95 border border-white/12 text-xs font-bold uppercase tracking-wide text-white/90 transition">OVER HERE! 👋</button>
-        <button type="button" data-preset="GREAT SET! 🙌" class="shrink-0 px-3 py-1.5 rounded-full bg-elevated hover:bg-white/15 active:scale-95 border border-white/12 text-xs font-bold uppercase tracking-wide text-white/90 transition">GREAT SET! 🙌</button>
-        <button type="button" data-preset="NEED WATER 💧" class="shrink-0 px-3 py-1.5 rounded-full bg-elevated hover:bg-white/15 active:scale-95 border border-white/12 text-xs font-bold uppercase tracking-wide text-white/90 transition">NEED WATER 💧</button>
-        <button id="addPresetBtn" type="button" style="border-color: var(--accent-color); color: var(--accent-color);" class="shrink-0 px-3.5 py-1.5 rounded-full bg-elevated hover:bg-white/15 active:scale-95 border border-dashed text-xs font-extrabold uppercase tracking-wide transition">+ ADD PRESET</button>
+      <!-- Horizontal Preset Strip + '+ Add Preset' + 'Edit Presets' -->
+      <div class="relative">
+        <div id="presetStrip" class="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5" aria-label="Quick venue presets">
+          <button type="button" data-preset="LOUDER PLEASE 🔊" class="shrink-0 px-3 py-1.5 rounded-full bg-elevated hover:bg-white/15 active:scale-95 border border-white/12 text-xs font-bold uppercase tracking-wide text-white/90 transition">LOUDER PLEASE 🔊</button>
+          <button type="button" data-preset="WHAT DID YOU SAY? 👂" class="shrink-0 px-3 py-1.5 rounded-full bg-elevated hover:bg-white/15 active:scale-95 border border-white/12 text-xs font-bold uppercase tracking-wide text-white/90 transition">WHAT DID YOU SAY? 👂</button>
+          <button type="button" data-preset="OVER HERE! 👋" class="shrink-0 px-3 py-1.5 rounded-full bg-elevated hover:bg-white/15 active:scale-95 border border-white/12 text-xs font-bold uppercase tracking-wide text-white/90 transition">OVER HERE! 👋</button>
+          <button type="button" data-preset="GREAT SET! 🙌" class="shrink-0 px-3 py-1.5 rounded-full bg-elevated hover:bg-white/15 active:scale-95 border border-white/12 text-xs font-bold uppercase tracking-wide text-white/90 transition">GREAT SET! 🙌</button>
+          <button type="button" data-preset="NEED WATER 💧" class="shrink-0 px-3 py-1.5 rounded-full bg-elevated hover:bg-white/15 active:scale-95 border border-white/12 text-xs font-bold uppercase tracking-wide text-white/90 transition">NEED WATER 💧</button>
+          <button id="addPresetBtn" type="button" style="border-color: var(--accent-color); color: var(--accent-color);" class="shrink-0 px-3.5 py-1.5 rounded-full bg-elevated hover:bg-white/15 active:scale-95 border border-dashed text-xs font-extrabold uppercase tracking-wide transition">+ ADD PRESET</button>
+        </div>
+
+        <!-- Edit Presets Dropdown Menu -->
+        <div id="editPresetsMenu" class="hidden absolute bottom-full right-0 mb-2 z-30 w-64 max-w-[calc(100vw-2rem)] rounded-2xl bg-surface border border-white/15 shadow-2xl overflow-hidden">
+          <div class="flex items-center justify-between px-3.5 py-2.5 border-b border-white/10 bg-elevated/70">
+            <span class="text-[11px] font-extrabold uppercase tracking-wider text-white/80">Edit Presets</span>
+            <button id="clearAllPresetsBtn" type="button" class="px-2 py-1 rounded-lg bg-red-500/15 hover:bg-red-500/25 active:scale-95 text-[11px] font-extrabold uppercase tracking-wide text-red-400 transition">
+              Clear All
+            </button>
+          </div>
+          <div id="editPresetsList" class="max-h-52 overflow-y-auto drawer-scroll divide-y divide-white/10 p-1.5"></div>
+        </div>
       </div>
 
       <!-- Fast Message Input Box -->
@@ -478,6 +491,9 @@
 
       const bottomDock = document.getElementById('bottomDock');
       const presetStrip = document.getElementById('presetStrip');
+      const editPresetsMenu = document.getElementById('editPresetsMenu');
+      const editPresetsList = document.getElementById('editPresetsList');
+      const clearAllPresetsBtn = document.getElementById('clearAllPresetsBtn');
       const typeBtn = document.getElementById('typeBtn');
       const landscapeBtn = document.getElementById('landscapeBtn');
       const landscapeIcon = document.getElementById('landscapeIcon');
@@ -530,6 +546,7 @@
       let camStream = null;
       let camCountdownTimer = null;
       let camCaptureTimeout = null;
+      let isEditPresetsOpen = false;
 
       // --- Toast & Focus Helpers ---
       function showToast(message) {
@@ -759,14 +776,31 @@
         }
       }
 
+      function removePresetAtIndex(index) {
+        if (index < 0 || index >= state.presets.length) return;
+        state.presets.splice(index, 1);
+        renderPresets();
+        renderEditPresetsMenu();
+        savePresetsToCloud();
+        showToast('Preset removed');
+      }
+
+      function clearAllPresetsKeepAddButton() {
+        if (!state.presets.length) return;
+        state.presets = [];
+        renderPresets();
+        renderEditPresetsMenu();
+        savePresetsToCloud();
+        showToast('All presets cleared');
+      }
+
       async function attachPhotoToRecent(entryId, photoDataUrl) {
         if (!entryId || !photoDataUrl) return;
-        const target = state.recent.find((item) => item.id === entryId);
-        if (target) {
-          target.photo = photoDataUrl;
-          persistRecentLocally();
-          renderRecentList();
-        }
+        state.recent = state.recent.map((item) =>
+          item.id === entryId ? { ...item, photo: photoDataUrl } : item
+        );
+        persistRecentLocally();
+        renderRecentList();
 
         if (!db || !currentUser) return;
         try {
@@ -1215,6 +1249,68 @@
       }
 
       // --- Preset Strip & Drawer Helpers ---
+      function renderEditPresetsMenu() {
+        if (!editPresetsList) return;
+        editPresetsList.innerHTML = '';
+
+        if (!state.presets.length) {
+          const emptyMsg = document.createElement('p');
+          emptyMsg.className = 'text-xs text-white/45 text-center py-4 px-2';
+          emptyMsg.textContent = 'No presets left. Use + ADD PRESET to create one.';
+          editPresetsList.appendChild(emptyMsg);
+          return;
+        }
+
+        state.presets.forEach((phrase, idx) => {
+          const itemRow = document.createElement('div');
+          itemRow.className = 'flex items-center justify-between gap-2 px-2.5 py-2 rounded-xl hover:bg-white/5 transition';
+
+          const labelEl = document.createElement('span');
+          labelEl.className = 'truncate text-xs font-bold uppercase tracking-wide text-white/90';
+          labelEl.textContent = phrase;
+
+          const removeBtn = document.createElement('button');
+          removeBtn.type = 'button';
+          removeBtn.setAttribute('aria-label', `Remove preset ${phrase}`);
+          removeBtn.title = 'Remove preset';
+          removeBtn.className = 'shrink-0 p-1.5 rounded-lg text-white/50 hover:text-red-400 hover:bg-white/10 active:scale-95 transition';
+          removeBtn.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          `;
+          removeBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            removePresetAtIndex(idx);
+          });
+
+          itemRow.appendChild(labelEl);
+          itemRow.appendChild(removeBtn);
+          editPresetsList.appendChild(itemRow);
+        });
+      }
+
+      function setEditPresetsMenuOpen(open) {
+        isEditPresetsOpen = Boolean(open);
+        if (!editPresetsMenu) return;
+        if (isEditPresetsOpen) {
+          renderEditPresetsMenu();
+          editPresetsMenu.classList.remove('hidden');
+        } else {
+          editPresetsMenu.classList.add('hidden');
+        }
+      }
+
+      function toggleEditPresetsMenu(e) {
+        if (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+        setEditPresetsMenuOpen(!isEditPresetsOpen);
+      }
+
       function renderPresets() {
         if (!presetStrip) return;
         presetStrip.innerHTML = '';
@@ -1229,6 +1325,7 @@
         addChip.addEventListener('click', (e) => {
           e.preventDefault();
           e.stopPropagation();
+          setEditPresetsMenuOpen(false);
           openAddPresetModal();
         });
         presetStrip.appendChild(addChip);
@@ -1239,11 +1336,20 @@
           chip.className = 'shrink-0 px-3 py-1.5 rounded-full bg-elevated hover:bg-white/15 active:scale-95 border border-white/12 text-xs font-bold uppercase tracking-wide text-white/90 transition';
           chip.textContent = phrase;
           chip.addEventListener('click', () => {
+            setEditPresetsMenuOpen(false);
             setMessageText(phrase);
             focusMessageInput();
           });
           presetStrip.appendChild(chip);
         });
+
+        const editBtn = document.createElement('button');
+        editBtn.type = 'button';
+        editBtn.id = 'editPresetsBtn';
+        editBtn.className = 'shrink-0 px-3 py-1.5 rounded-full bg-elevated hover:bg-white/15 active:scale-95 border border-white/20 text-xs font-bold uppercase tracking-wide text-white/80 hover:text-white transition';
+        editBtn.textContent = 'Edit Presets';
+        editBtn.addEventListener('click', toggleEditPresetsMenu);
+        presetStrip.appendChild(editBtn);
       }
 
       function openAddPresetModal() {
@@ -1432,6 +1538,30 @@
         });
       }
 
+      if (clearAllPresetsBtn) {
+        clearAllPresetsBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (!state.presets.length) return;
+          setEditPresetsMenuOpen(false);
+          openDeleteConfirmation({
+            title: 'Clear all presets?',
+            message: 'Remove all saved presets while keeping the + ADD PRESET button?',
+            confirmLabel: 'Clear All',
+            onConfirm: () => clearAllPresetsKeepAddButton(),
+          });
+        });
+      }
+
+      document.addEventListener('click', (e) => {
+        if (!isEditPresetsOpen) return;
+        const clickedInsideMenu = editPresetsMenu && editPresetsMenu.contains(e.target);
+        const clickedEditBtn = e.target && e.target.id === 'editPresetsBtn';
+        if (!clickedInsideMenu && !clickedEditBtn) {
+          setEditPresetsMenuOpen(false);
+        }
+      });
+
       if (addPresetForm) {
         addPresetForm.addEventListener('submit', (e) => {
           e.preventDefault();
@@ -1555,10 +1685,13 @@
               (docSnap) => {
                 if (docSnap.exists()) {
                   const data = docSnap.data();
-                  if (Array.isArray(data.presets) && data.presets.length > 0) {
-                    state.presets = data.presets;
+                  if (Array.isArray(data.presets)) {
+                    state.presets = data.presets.filter((p) => typeof p === 'string' && p.trim());
                     persistPresetsLocally();
                     renderPresets();
+                    if (isEditPresetsOpen) {
+                      renderEditPresetsMenu();
+                    }
                   }
                 }
               },
