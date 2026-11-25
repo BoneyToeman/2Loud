@@ -26,6 +26,91 @@
       },
     };
   </script>
+  <!-- Epilepsy warning script -->
+  <script>
+  // ==== Epilepsy Warning & Effect Gating ====
+  const EP_WARNING_KEY = 'EPILEPSY_WARNING_ACCEPTED';
+  let warningModal = null;
+  let warningOverlay = null;
+  let pulseMenuOptions = [];
+
+  function buildEpilepsyWarning() {
+    warningOverlay = document.createElement('div');
+    warningOverlay.className = 'fixed inset-0 bg-black/70 z-50 flex items-center justify-center';
+    warningModal = document.createElement('div');
+    warningModal.className = 'max-w-sm w-full bg-surface border border-white/15 rounded-2xl p-5 shadow-2xl';
+    warningModal.innerHTML = `
+      <h2 class="font-display font-bold text-lg text-white mb-2">Epilepsy / Seizure Warning</h2>
+      <p class="text-sm text-white/80 mb-4">
+        Some visual effects flash rapidly. If you have a condition that may be triggered by flashing lights, please do <strong>not</strong> enable these effects.
+      </p>
+      <div class="flex justify-end gap-2">
+        <button id="epWarnCancel"
+          class="px-3 py-1 rounded bg-white/10 hover:bg-white/20 text-sm text-white">
+          Decline
+        </button>
+        <button id="epWarnAccept"
+          class="px-3 py-1 rounded bg-white/20 hover:bg-white/30 text-sm text-white">
+          Accept
+        </button>
+      </div>`;
+    warningOverlay.appendChild(warningModal);
+    document.body.appendChild(warningOverlay);
+    warningOverlay.querySelector('#epWarnAccept').onclick = () => {
+      localStorage.setItem(EP_WARNING_KEY, 'true');
+      hideEpilepsyWarning();
+      enableAllPulseOptions();
+    };
+    warningOverlay.querySelector('#epWarnCancel').onclick = () => {
+      localStorage.setItem(EP_WARNING_KEY, 'false');
+      hideEpilepsyWarning();
+      disableAllPulseOptions();
+    };
+  }
+
+  function showEpilepsyWarning() {
+    if (!warningOverlay) buildEpilepsyWarning();
+    warningOverlay.classList.remove('hidden');
+  }
+  function hideEpilepsyWarning() {
+    if (warningOverlay) warningOverlay.classList.add('hidden');
+  }
+
+    function enableAllPulseOptions() {
+    pulseMenuOptions.forEach(btn => btn.classList.remove('opacity-40'));
+  }
+  function disableAllPulseOptions() {
+    // visually dim but keep clickable so warning can re‑appear on each attempt
+    pulseMenuOptions.forEach(btn => btn.classList.add('opacity-40'));
+  }
+
+  function initEpilepsyFlow() {
+    const stored = localStorage.getItem(EP_WARNING_KEY);
+    if (stored === 'true') {
+      enableAllPulseOptions();
+    } else if (stored === 'false') {
+      disableAllPulseOptions();
+    } else {
+      showEpilepsyWarning();
+    }
+  }
+
+  function interceptEffectClick(e) {
+    if (localStorage.getItem(EP_WARNING_KEY) !== 'true') {
+      e.preventDefault();
+      e.stopPropagation();
+      showEpilepsyWarning();
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    pulseMenuOptions = Array.from(document.querySelectorAll('.pulse-effect-option'));
+    pulseMenuOptions.forEach(btn => {
+      btn.addEventListener('click', interceptEffectClick, true);
+    });
+    initEpilepsyFlow();
+  });
+  </script>
   <style>
     :root {
       --accent-color: #39FF14;
