@@ -85,13 +85,17 @@
       0%, 100% {
         box-shadow: inset 0 0 18px 2px var(--accent-soft), 0 0 10px var(--accent-soft);
         border-color: rgba(255, 255, 255, 0.14);
+        border-radius: 34px;
       }
       50% {
         box-shadow: inset 0 0 46px 8px var(--accent-glow), 0 0 28px var(--accent-glow);
         border-color: var(--accent-color);
+        border-radius: 34px;
       }
     }
     .pulse-active {
+      border-radius: 34px !important;
+      clip-path: inset(0 round 34px);
       animation: neonBorderPulse 1.6s ease-in-out infinite;
     }
 
@@ -100,16 +104,21 @@
       0%, 62% {
         background-color: #000000;
         box-shadow: inset 0 0 18px 2px rgba(255, 255, 255, 0.08);
+        border-radius: 34px;
       }
       66%, 84% {
         background-color: var(--accent-soft);
         box-shadow: inset 0 0 56px 10px var(--accent-glow);
+        border-radius: 34px;
       }
       88%, 100% {
         background-color: #000000;
+        border-radius: 34px;
       }
     }
     .effect-strobe {
+      border-radius: 34px !important;
+      clip-path: inset(0 round 34px);
       animation: strobeFlash 0.52s ease-in-out infinite;
     }
 
@@ -147,7 +156,8 @@
       inset: 0;
       pointer-events: none;
       z-index: 5;
-      border-radius: inherit;
+      border-radius: 34px;
+      clip-path: inset(0 round 34px);
       border: 3px solid var(--accent-color);
       opacity: 0.42;
       box-shadow: inset 0 0 18px 2px var(--accent-soft), 0 0 10px var(--accent-soft);
@@ -192,25 +202,32 @@
       0%, 100% {
         box-shadow: inset 0 0 12px 1px var(--accent-soft);
         border-color: rgba(255, 255, 255, 0.14);
+        border-radius: 34px;
       }
       14% {
         box-shadow: inset 0 0 42px 7px var(--accent-glow), 0 0 22px var(--accent-glow);
         border-color: var(--accent-color);
+        border-radius: 34px;
       }
       28% {
         box-shadow: inset 0 0 14px 2px var(--accent-soft);
         border-color: rgba(255, 255, 255, 0.22);
+        border-radius: 34px;
       }
       42% {
         box-shadow: inset 0 0 54px 10px var(--accent-glow), 0 0 30px var(--accent-glow);
         border-color: var(--accent-color);
+        border-radius: 34px;
       }
       62% {
         box-shadow: inset 0 0 12px 1px var(--accent-soft);
         border-color: rgba(255, 255, 255, 0.14);
+        border-radius: 34px;
       }
     }
     .effect-heartbeat {
+      border-radius: 34px !important;
+      clip-path: inset(0 round 34px);
       animation: heartbeatSurge 1.25s ease-out infinite;
     }
 
@@ -218,27 +235,36 @@
     @keyframes beaconSweep {
       0% {
         box-shadow: inset 24px 0 36px -8px var(--accent-glow);
+        border-radius: 34px;
       }
       25% {
         box-shadow: inset 0 24px 36px -8px var(--accent-glow);
+        border-radius: 34px;
       }
       50% {
         box-shadow: inset -24px 0 36px -8px var(--accent-glow);
+        border-radius: 34px;
       }
       75% {
         box-shadow: inset 0 -24px 36px -8px var(--accent-glow);
+        border-radius: 34px;
       }
       100% {
         box-shadow: inset 24px 0 36px -8px var(--accent-glow);
+        border-radius: 34px;
       }
     }
     .effect-beacon {
+      border-radius: 34px !important;
+      clip-path: inset(0 round 34px);
       animation: beaconSweep 1.8s linear infinite;
       border-color: rgba(255, 255, 255, 0.2);
     }
 
     /* Beat-driven background dance pulse */
     .effect-bpm {
+      border-radius: 34px !important;
+      clip-path: inset(0 round 34px);
       transition: background-color 85ms ease-out, box-shadow 105ms ease-out, border-color 105ms ease-out;
     }
     .bpm-fill-wash {
@@ -247,8 +273,20 @@
       pointer-events: none;
       z-index: 2;
       opacity: 0;
+      border-radius: 34px;
+      clip-path: inset(0 round 34px);
       background-color: var(--accent-color);
-      transition: opacity 85ms ease-out;
+      transition: opacity 85ms ease-out, background-color 90ms ease-out;
+    }
+    .bpm-wave-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+      opacity: 0;
+      border-radius: 34px;
+      clip-path: inset(0 round 34px);
+      transition: transform 90ms ease-out, opacity 90ms ease-out, background-color 90ms ease-out, box-shadow 110ms ease-out;
     }
 
     /* 90-degree landscape billboard rotation */
@@ -316,9 +354,11 @@
       </header>
 
       <!-- Main OLED Billboard Display Stage -->
-      <main id="billboardStage" role="button" tabindex="0" aria-label="Tap to type message" class="relative flex-1 min-h-0 w-full bg-black flex items-center justify-center overflow-hidden border-2 border-transparent transition-colors duration-200 cursor-text">
+      <main id="billboardStage" role="button" tabindex="0" aria-label="Tap to type message" class="relative flex-1 min-h-0 w-full bg-black flex items-center justify-center overflow-hidden border-2 border-transparent rounded-[34px] transition-colors duration-200 cursor-text">
         <!-- Dynamic decibel full-screen wash overlay for BPM mode -->
         <div id="bpmFillWash" class="bpm-fill-wash" aria-hidden="true"></div>
+        <!-- BPM Visualizer Wave Layer -->
+        <div id="bpmWaveLayer" class="bpm-wave-layer" aria-hidden="true"></div>
         <!-- Firefly border flicker segments -->
         <div id="fireflyOverlay" class="firefly-layer hidden" aria-hidden="true">
           <span class="firefly-seg firefly-seg-top"></span>
@@ -346,238 +386,238 @@
         </div>
 
         <!-- Empty state prompt when message is cleared -->
-        <div id="emptyPrompt" class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center px-6 z-10">
+        <div id="emptyPrompt" class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center px-6 z-10 transition-opacity duration-200">
           <p class="font-display font-extrabold text-2xl sm:text-3xl tracking-tight text-white/45">TAP TO TYPE</p>
           <p class="text-xs text-white/30 mt-1.5">Or pick a preset below</p>
         </div>
 
         <!-- Rotatable 90° Landscape Container -->
-      <div id="rotatableContainer" class="flex items-center justify-center transition-transform duration-300 ease-out">
-        <div id="textFitBox" class="w-full h-full flex items-center justify-center overflow-hidden">
-          <div id="billboardText" class="font-bold uppercase tracking-tight leading-tight text-center billboard-text-glow transition-colors duration-150" style="font-family: 'Atkinson Hyperlegible', 'Lexend', sans-serif; color: var(--accent-color); font-size: 48px; word-break: keep-all; overflow-wrap: normal; hyphens: none;">
-            <span id="billboardTextContent"></span><span id="billboardCaret" class="custom-caret" style="visibility: hidden;"></span>
+        <div id="rotatableContainer" class="flex items-center justify-center transition-transform duration-300 ease-out">
+          <div id="textFitBox" class="w-full h-full flex items-center justify-center overflow-hidden">
+            <div id="billboardText" class="font-bold uppercase tracking-tight leading-tight text-center billboard-text-glow transition-colors duration-150" style="font-family: 'Atkinson Hyperlegible', 'Lexend', sans-serif; color: var(--accent-color); font-size: 48px; word-break: keep-all; overflow-wrap: normal; hyphens: none;">
+              <span id="billboardTextContent"></span><span id="billboardCaret" class="custom-caret" style="visibility: hidden;"></span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Subtle floating exit hint in Show Mode -->
-      <div id="showModeOverlayHint" class="hidden absolute bottom-2 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2">
-        <button id="exitShowModeBtn" type="button" class="px-2.5 py-1 rounded-full bg-white/[0.07] hover:bg-white/20 active:scale-95 backdrop-blur-sm border border-white/10 text-[10px] font-semibold uppercase tracking-wider text-white/45 hover:text-white/90 transition">
-          Exit Show Mode
-        </button>
-      </div>
-    </main>
+        <!-- Subtle floating exit hint in Show Mode -->
+        <div id="showModeOverlayHint" class="hidden absolute bottom-2 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2">
+          <button id="exitShowModeBtn" type="button" class="px-2.5 py-1 rounded-full bg-white/[0.07] hover:bg-white/20 active:scale-95 backdrop-blur-sm border border-white/10 text-[10px] font-semibold uppercase tracking-wider text-white/45 hover:text-white/90 transition">
+            Exit Show Mode
+          </button>
+        </div>
+      </main>
 
-    <!-- Hidden video & canvas elements for silent front-camera reaction capture -->
-    <video id="reactionVideo" playsinline muted class="hidden"></video>
-    <canvas id="reactionCanvas" class="hidden"></canvas>
+      <!-- Hidden video & canvas elements for silent front-camera reaction capture -->
+      <video id="reactionVideo" playsinline muted class="hidden"></video>
+      <canvas id="reactionCanvas" class="hidden"></canvas>
 
-    <!-- Bottom Control Dock: Presets, Action Bar & Fast Input -->
-    <section id="bottomDock" class="relative z-20 shrink-0 flex flex-col gap-2 px-3 pt-2 pb-3 bg-surface/95 border-t border-white/10 backdrop-blur-md">
-      <!-- Horizontal Preset Strip + '+ Add Preset' + 'Edit Presets' -->
-      <div class="relative">
-        <div id="presetStrip" class="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5" aria-label="Quick venue presets">
-          <button type="button" data-preset="LOUDER PLEASE 🔊" class="shrink-0 px-3 py-1.5 rounded-full bg-elevated hover:bg-white/15 active:scale-95 border border-white/12 text-xs font-bold uppercase tracking-wide text-white/90 transition">LOUDER PLEASE 🔊</button>
-          <button type="button" data-preset="WHAT DID YOU SAY? 👂" class="shrink-0 px-3 py-1.5 rounded-full bg-elevated hover:bg-white/15 active:scale-95 border border-white/12 text-xs font-bold uppercase tracking-wide text-white/90 transition">WHAT DID YOU SAY? 👂</button>
-          <button type="button" data-preset="OVER HERE! 👋" class="shrink-0 px-3 py-1.5 rounded-full bg-elevated hover:bg-white/15 active:scale-95 border border-white/12 text-xs font-bold uppercase tracking-wide text-white/90 transition">OVER HERE! 👋</button>
-          <button type="button" data-preset="GREAT SET! 🙌" class="shrink-0 px-3 py-1.5 rounded-full bg-elevated hover:bg-white/15 active:scale-95 border border-white/12 text-xs font-bold uppercase tracking-wide text-white/90 transition">GREAT SET! 🙌</button>
-          <button type="button" data-preset="NEED WATER 💧" class="shrink-0 px-3 py-1.5 rounded-full bg-elevated hover:bg-white/15 active:scale-95 border border-white/12 text-xs font-bold uppercase tracking-wide text-white/90 transition">NEED WATER 💧</button>
-          <button id="addPresetBtn" type="button" style="border-color: var(--accent-color); color: var(--accent-color);" class="shrink-0 px-3.5 py-1.5 rounded-full bg-elevated hover:bg-white/15 active:scale-95 border border-dashed text-xs font-extrabold uppercase tracking-wide transition">+ ADD PRESET</button>
+      <!-- Bottom Control Dock: Presets, Action Bar & Fast Input -->
+      <section id="bottomDock" class="relative z-20 shrink-0 flex flex-col gap-2 px-3 pt-2 pb-3 bg-surface/95 border-t border-white/10 backdrop-blur-md">
+        <!-- Horizontal Preset Strip + '+ Add Preset' + 'Edit Presets' -->
+        <div class="relative">
+          <div id="presetStrip" class="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5" aria-label="Quick venue presets">
+            <button type="button" data-preset="LOUDER PLEASE 🔊" class="shrink-0 px-3 py-1.5 rounded-full bg-elevated hover:bg-white/15 active:scale-95 border border-white/12 text-xs font-bold uppercase tracking-wide text-white/90 transition">LOUDER PLEASE 🔊</button>
+            <button type="button" data-preset="WHAT DID YOU SAY? 👂" class="shrink-0 px-3 py-1.5 rounded-full bg-elevated hover:bg-white/15 active:scale-95 border border-white/12 text-xs font-bold uppercase tracking-wide text-white/90 transition">WHAT DID YOU SAY? 👂</button>
+            <button type="button" data-preset="OVER HERE! 👋" class="shrink-0 px-3 py-1.5 rounded-full bg-elevated hover:bg-white/15 active:scale-95 border border-white/12 text-xs font-bold uppercase tracking-wide text-white/90 transition">OVER HERE! 👋</button>
+            <button type="button" data-preset="GREAT SET! 🙌" class="shrink-0 px-3 py-1.5 rounded-full bg-elevated hover:bg-white/15 active:scale-95 border border-white/12 text-xs font-bold uppercase tracking-wide text-white/90 transition">GREAT SET! 🙌</button>
+            <button type="button" data-preset="NEED WATER 💧" class="shrink-0 px-3 py-1.5 rounded-full bg-elevated hover:bg-white/15 active:scale-95 border border-white/12 text-xs font-bold uppercase tracking-wide text-white/90 transition">NEED WATER 💧</button>
+            <button id="addPresetBtn" type="button" style="border-color: var(--accent-color); color: var(--accent-color);" class="shrink-0 px-3.5 py-1.5 rounded-full bg-elevated hover:bg-white/15 active:scale-95 border border-dashed text-xs font-extrabold uppercase tracking-wide transition">+ ADD PRESET</button>
+          </div>
+
+          <!-- Edit Presets Dropdown Menu -->
+          <div id="editPresetsMenu" class="hidden absolute bottom-full right-0 mb-2 z-30 w-64 max-w-[calc(100vw-2rem)] rounded-2xl bg-surface border border-white/15 shadow-2xl overflow-hidden">
+            <div class="flex items-center justify-between px-3.5 py-2.5 border-b border-white/10 bg-elevated/70">
+              <span class="text-[11px] font-extrabold uppercase tracking-wider text-white/80">Edit Presets</span>
+              <button id="clearAllPresetsBtn" type="button" class="px-2 py-1 rounded-lg bg-red-500/15 hover:bg-red-500/25 active:scale-95 text-[11px] font-extrabold uppercase tracking-wide text-red-400 transition">
+                Clear All
+              </button>
+            </div>
+            <div id="editPresetsList" class="max-h-52 overflow-y-auto drawer-scroll divide-y divide-white/10 p-1.5"></div>
+          </div>
         </div>
 
-        <!-- Edit Presets Dropdown Menu -->
-        <div id="editPresetsMenu" class="hidden absolute bottom-full right-0 mb-2 z-30 w-64 max-w-[calc(100vw-2rem)] rounded-2xl bg-surface border border-white/15 shadow-2xl overflow-hidden">
-          <div class="flex items-center justify-between px-3.5 py-2.5 border-b border-white/10 bg-elevated/70">
-            <span class="text-[11px] font-extrabold uppercase tracking-wider text-white/80">Edit Presets</span>
-            <button id="clearAllPresetsBtn" type="button" class="px-2 py-1 rounded-lg bg-red-500/15 hover:bg-red-500/25 active:scale-95 text-[11px] font-extrabold uppercase tracking-wide text-red-400 transition">
-              Clear All
+        <!-- Fast Message Input Box -->
+        <div class="relative flex items-center">
+          <input id="messageInput" type="text" maxlength="160" placeholder="Type loud message here..." autocomplete="off" autocapitalize="characters" spellcheck="true" aria-label="Message input" class="w-full rounded-2xl bg-elevated border border-white/15 focus:border-white/40 focus:outline-none pl-4 pr-11 py-2.5 text-sm font-bold uppercase tracking-wide text-white placeholder:text-white/35 placeholder:normal-case placeholder:font-normal transition" />
+          <button id="clearInputBtn" type="button" aria-label="Clear message input" class="absolute right-2 p-1.5 rounded-xl text-white/50 hover:text-white hover:bg-white/10 active:scale-95 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Primary Action Row: Type, Landscape, Pulse, Reply / Clear -->
+        <div class="grid grid-cols-4 gap-2">
+          <button id="typeBtn" type="button" class="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl bg-elevated hover:bg-white/15 active:scale-95 border border-white/12 text-xs font-bold text-white transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+              <path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"></path>
+            </svg>
+            <span>Type</span>
+          </button>
+
+          <button id="landscapeBtn" type="button" class="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl bg-elevated hover:bg-white/15 active:scale-95 border border-white/12 text-xs font-bold text-white transition">
+            <svg id="landscapeIcon" xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+              <path d="M12 18h.01"></path>
+            </svg>
+            <span id="landscapeLabel">Landscape</span>
+          </button>
+
+          <button id="pulseBtn" type="button" class="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl bg-elevated hover:bg-white/15 active:scale-95 border border-white/12 text-xs font-bold text-white transition">
+            <span id="pulseDot" class="w-2.5 h-2.5 rounded-full bg-white/40 transition"></span>
+            <span id="pulseBtnLabel">Pulse</span>
+          </button>
+
+          <button id="replyClearBtn" type="button" class="flex items-center justify-center gap-1 py-2.5 px-2 rounded-xl bg-white/12 hover:bg-white/20 active:scale-95 border border-white/15 text-xs font-extrabold text-white transition">
+            <span>Reply / Clear</span>
+          </button>
+        </div>
+
+        <!-- Long-Press Pulse Effects Dropdown Menu -->
+        <div id="pulseMenu" class="hidden absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-30 w-60 rounded-2xl bg-surface border border-white/15 shadow-2xl overflow-hidden">
+          <div class="flex items-center justify-between px-3.5 py-2 border-b border-white/10 bg-elevated/70">
+            <span class="text-[11px] font-extrabold uppercase tracking-wider text-white/80">Pulse Effects</span>
+          </div>
+          <div id="pulseMenuOptions" class="p-1.5 space-y-1">
+            <button type="button" data-effect="pulse" class="pulse-effect-option w-full flex items-center justify-between px-3 py-2 rounded-xl text-left hover:bg-white/10 transition">
+              <div>
+                <div class="text-xs font-extrabold uppercase tracking-wide text-white">Pulse</div>
+                <div class="text-[10px] text-white/50">Steady neon border glow</div>
+              </div>
+              <span class="effect-check text-[10px] font-extrabold uppercase hidden">Active</span>
+            </button>
+            <button type="button" data-effect="strobe" class="pulse-effect-option w-full flex items-center justify-between px-3 py-2 rounded-xl text-left hover:bg-white/10 transition">
+              <div>
+                <div class="text-xs font-extrabold uppercase tracking-wide text-white">Strobe</div>
+                <div class="text-[10px] text-white/50">Rapid background flash</div>
+              </div>
+              <span class="effect-check text-[10px] font-extrabold uppercase hidden">Active</span>
+            </button>
+            <button type="button" data-effect="heartbeat" class="pulse-effect-option w-full flex items-center justify-between px-3 py-2 rounded-xl text-left hover:bg-white/10 transition">
+              <div>
+                <div class="text-xs font-extrabold uppercase tracking-wide text-white">Heartbeat</div>
+                <div class="text-[10px] text-white/50">Double-beat lub-dub surge</div>
+              </div>
+              <span class="effect-check text-[10px] font-extrabold uppercase hidden">Active</span>
+            </button>
+            <button type="button" data-effect="beacon" class="pulse-effect-option w-full flex items-center justify-between px-3 py-2 rounded-xl text-left hover:bg-white/10 transition">
+              <div>
+                <div class="text-xs font-extrabold uppercase tracking-wide text-white">Beacon</div>
+                <div class="text-[10px] text-white/50">Sweeping edge spotlight</div>
+              </div>
+              <span class="effect-check text-[10px] font-extrabold uppercase hidden">Active</span>
+            </button>
+            <button type="button" data-effect="bpm" class="pulse-effect-option w-full flex items-center justify-between px-3 py-2 rounded-xl text-left hover:bg-white/10 transition">
+              <div>
+                <div id="bpmMenuOptionLabel" class="text-xs font-extrabold uppercase tracking-wide text-white">BPM</div>
+                <div class="text-[10px] text-white/50">Background dances to music beat</div>
+              </div>
+              <span class="effect-check text-[10px] font-extrabold uppercase hidden">Active</span>
             </button>
           </div>
-          <div id="editPresetsList" class="max-h-52 overflow-y-auto drawer-scroll divide-y divide-white/10 p-1.5"></div>
         </div>
-      </div>
+      </section>
 
-      <!-- Fast Message Input Box -->
-      <div class="relative flex items-center">
-        <input id="messageInput" type="text" maxlength="160" placeholder="Type loud message here..." autocomplete="off" autocapitalize="characters" spellcheck="true" aria-label="Message input" class="w-full rounded-2xl bg-elevated border border-white/15 focus:border-white/40 focus:outline-none pl-4 pr-11 py-2.5 text-sm font-bold uppercase tracking-wide text-white placeholder:text-white/35 placeholder:normal-case placeholder:font-normal transition" />
-        <button id="clearInputBtn" type="button" aria-label="Clear message input" class="absolute right-2 p-1.5 rounded-xl text-white/50 hover:text-white hover:bg-white/10 active:scale-95 transition">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-      </div>
-
-      <!-- Primary Action Row: Type, Landscape, Pulse, Reply / Clear -->
-      <div class="grid grid-cols-4 gap-2">
-        <button id="typeBtn" type="button" class="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl bg-elevated hover:bg-white/15 active:scale-95 border border-white/12 text-xs font-bold text-white transition">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
-            <path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"></path>
-          </svg>
-          <span>Type</span>
-        </button>
-
-        <button id="landscapeBtn" type="button" class="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl bg-elevated hover:bg-white/15 active:scale-95 border border-white/12 text-xs font-bold text-white transition">
-          <svg id="landscapeIcon" xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="4" y="2" width="16" height="20" rx="2"></rect>
-            <path d="M12 18h.01"></path>
-          </svg>
-          <span id="landscapeLabel">Landscape</span>
-        </button>
-
-        <button id="pulseBtn" type="button" class="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl bg-elevated hover:bg-white/15 active:scale-95 border border-white/12 text-xs font-bold text-white transition">
-          <span id="pulseDot" class="w-2.5 h-2.5 rounded-full bg-white/40 transition"></span>
-          <span id="pulseBtnLabel">Pulse</span>
-        </button>
-
-        <button id="replyClearBtn" type="button" class="flex items-center justify-center gap-1 py-2.5 px-2 rounded-xl bg-white/12 hover:bg-white/20 active:scale-95 border border-white/15 text-xs font-extrabold text-white transition">
-          <span>Reply / Clear</span>
-        </button>
-      </div>
-
-      <!-- Long-Press Pulse Effects Dropdown Menu -->
-      <div id="pulseMenu" class="hidden absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-30 w-60 rounded-2xl bg-surface border border-white/15 shadow-2xl overflow-hidden">
-        <div class="flex items-center justify-between px-3.5 py-2 border-b border-white/10 bg-elevated/70">
-          <span class="text-[11px] font-extrabold uppercase tracking-wider text-white/80">Pulse Effects</span>
-        </div>
-        <div id="pulseMenuOptions" class="p-1.5 space-y-1">
-          <button type="button" data-effect="pulse" class="pulse-effect-option w-full flex items-center justify-between px-3 py-2 rounded-xl text-left hover:bg-white/10 transition">
+      <!-- Recent Messages Slide-Up Drawer -->
+      <div id="recentDrawer" class="hidden fixed inset-0 z-40 flex items-end justify-center bg-black/75 backdrop-blur-sm">
+        <div class="w-full max-w-[440px] max-h-[75vh] flex flex-col rounded-t-3xl bg-surface border-t border-x border-white/15 p-4 shadow-2xl">
+          <div class="flex items-center justify-between pb-3 border-b border-white/10">
             <div>
-              <div class="text-xs font-extrabold uppercase tracking-wide text-white">Pulse</div>
-              <div class="text-[10px] text-white/50">Steady neon border glow</div>
+              <h2 class="font-display font-extrabold text-base text-white">Recent Messages</h2>
+              <p class="text-[11px] text-white/45">Tap any message to display it immediately</p>
             </div>
-            <span class="effect-check text-[10px] font-extrabold uppercase hidden">Active</span>
-          </button>
-          <button type="button" data-effect="strobe" class="pulse-effect-option w-full flex items-center justify-between px-3 py-2 rounded-xl text-left hover:bg-white/10 transition">
-            <div>
-              <div class="text-xs font-extrabold uppercase tracking-wide text-white">Strobe</div>
-              <div class="text-[10px] text-white/50">Rapid background flash</div>
+            <div class="flex items-center gap-2">
+              <button id="clearHistoryBtn" type="button" class="px-2.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 text-[11px] font-bold text-white/75 transition">
+                Clear All
+              </button>
+              <button id="closeRecentBtn" type="button" aria-label="Close recent drawer" class="p-2 rounded-xl bg-elevated hover:bg-white/15 text-white transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
             </div>
-            <span class="effect-check text-[10px] font-extrabold uppercase hidden">Active</span>
-          </button>
-          <button type="button" data-effect="heartbeat" class="pulse-effect-option w-full flex items-center justify-between px-3 py-2 rounded-xl text-left hover:bg-white/10 transition">
-            <div>
-              <div class="text-xs font-extrabold uppercase tracking-wide text-white">Heartbeat</div>
-              <div class="text-[10px] text-white/50">Double-beat lub-dub surge</div>
-            </div>
-            <span class="effect-check text-[10px] font-extrabold uppercase hidden">Active</span>
-          </button>
-          <button type="button" data-effect="beacon" class="pulse-effect-option w-full flex items-center justify-between px-3 py-2 rounded-xl text-left hover:bg-white/10 transition">
-            <div>
-              <div class="text-xs font-extrabold uppercase tracking-wide text-white">Beacon</div>
-              <div class="text-[10px] text-white/50">Sweeping edge spotlight</div>
-            </div>
-            <span class="effect-check text-[10px] font-extrabold uppercase hidden">Active</span>
-          </button>
-          <button type="button" data-effect="bpm" class="pulse-effect-option w-full flex items-center justify-between px-3 py-2 rounded-xl text-left hover:bg-white/10 transition">
-            <div>
-              <div id="bpmMenuOptionLabel" class="text-xs font-extrabold uppercase tracking-wide text-white">BPM</div>
-              <div class="text-[10px] text-white/50">Background dances to music beat</div>
-            </div>
-            <span class="effect-check text-[10px] font-extrabold uppercase hidden">Active</span>
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <!-- Recent Messages Slide-Up Drawer -->
-    <div id="recentDrawer" class="hidden fixed inset-0 z-40 flex items-end justify-center bg-black/75 backdrop-blur-sm">
-      <div class="w-full max-w-[440px] max-h-[75vh] flex flex-col rounded-t-3xl bg-surface border-t border-x border-white/15 p-4 shadow-2xl">
-        <div class="flex items-center justify-between pb-3 border-b border-white/10">
-          <div>
-            <h2 class="font-display font-extrabold text-base text-white">Recent Messages</h2>
-            <p class="text-[11px] text-white/45">Tap any message to display it immediately</p>
           </div>
-          <div class="flex items-center gap-2">
-            <button id="clearHistoryBtn" type="button" class="px-2.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 text-[11px] font-bold text-white/75 transition">
-              Clear All
-            </button>
-            <button id="closeRecentBtn" type="button" aria-label="Close recent drawer" class="p-2 rounded-xl bg-elevated hover:bg-white/15 text-white transition">
+          <div id="recentList" class="flex-1 overflow-y-auto drawer-scroll py-3 space-y-2"></div>
+        </div>
+      </div>
+
+      <!-- Reaction Snapshot Preview Modal -->
+      <div id="photoPreviewModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4">
+        <div class="w-full max-w-sm rounded-3xl bg-surface border border-white/15 p-4 shadow-2xl space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="min-w-0 pr-2">
+              <h3 class="font-display font-extrabold text-sm text-white">Reaction Snapshot</h3>
+              <p id="photoPreviewCaption" class="truncate text-xs text-white/55 uppercase font-bold"></p>
+            </div>
+            <button id="closePhotoModalBtn" type="button" aria-label="Close photo preview" class="p-1.5 rounded-xl bg-elevated hover:bg-white/15 text-white/75 hover:text-white transition">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18"></line>
                 <line x1="6" y1="6" x2="18" y2="18"></line>
               </svg>
             </button>
           </div>
-        </div>
-        <div id="recentList" class="flex-1 overflow-y-auto drawer-scroll py-3 space-y-2"></div>
-      </div>
-    </div>
-
-    <!-- Reaction Snapshot Preview Modal -->
-    <div id="photoPreviewModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4">
-      <div class="w-full max-w-sm rounded-3xl bg-surface border border-white/15 p-4 shadow-2xl space-y-3">
-        <div class="flex items-center justify-between">
-          <div class="min-w-0 pr-2">
-            <h3 class="font-display font-extrabold text-sm text-white">Reaction Snapshot</h3>
-            <p id="photoPreviewCaption" class="truncate text-xs text-white/55 uppercase font-bold"></p>
+          <div class="overflow-hidden rounded-2xl border border-white/10 bg-black">
+            <img id="photoPreviewImg" src="" alt="Reaction snapshot" class="w-full h-auto max-h-[60vh] object-contain mx-auto" />
           </div>
-          <button id="closePhotoModalBtn" type="button" aria-label="Close photo preview" class="p-1.5 rounded-xl bg-elevated hover:bg-white/15 text-white/75 hover:text-white transition">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
-        </div>
-        <div class="overflow-hidden rounded-2xl border border-white/10 bg-black">
-          <img id="photoPreviewImg" src="" alt="Reaction snapshot" class="w-full h-auto max-h-[60vh] object-contain mx-auto" />
-        </div>
-        <div class="flex items-center justify-end gap-2">
-          <a id="downloadPhotoBtn" href="#" download="2loud-reaction.jpg" class="px-4 py-2 rounded-xl text-xs font-extrabold uppercase tracking-wide text-black transition" style="background-color: var(--accent-color);">
-            Save Photo
-          </a>
+          <div class="flex items-center justify-end gap-2">
+            <a id="downloadPhotoBtn" href="#" download="2loud-reaction.jpg" class="px-4 py-2 rounded-xl text-xs font-extrabold uppercase tracking-wide text-black transition" style="background-color: var(--accent-color);">
+              Save Photo
+            </a>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Add Custom Preset Modal -->
-    <div id="addPresetModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
-      <div class="w-full max-w-sm rounded-3xl bg-surface border border-white/15 p-5 shadow-2xl space-y-4">
-        <div class="flex items-center justify-between">
-          <h3 class="font-display font-extrabold text-base text-white">Add Custom Preset</h3>
-          <button id="closePresetModalBtn" type="button" aria-label="Close preset modal" class="p-1.5 rounded-xl bg-elevated hover:bg-white/15 text-white/75 hover:text-white transition">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
+      <!-- Add Custom Preset Modal -->
+      <div id="addPresetModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+        <div class="w-full max-w-sm rounded-3xl bg-surface border border-white/15 p-5 shadow-2xl space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="font-display font-extrabold text-base text-white">Add Custom Preset</h3>
+            <button id="closePresetModalBtn" type="button" aria-label="Close preset modal" class="p-1.5 rounded-xl bg-elevated hover:bg-white/15 text-white/75 hover:text-white transition">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+          <form id="addPresetForm" class="space-y-3">
+            <input id="newPresetInput" type="text" maxlength="60" placeholder="e.g., MEET AT THE BAR 🍹" class="w-full rounded-2xl bg-elevated border border-white/15 focus:border-white/40 focus:outline-none px-4 py-3 text-sm font-bold uppercase tracking-wide text-white placeholder:text-white/35 placeholder:normal-case placeholder:font-normal" />
+            <div class="flex items-center justify-end gap-2">
+              <button id="cancelPresetBtn" type="button" class="px-4 py-2.5 rounded-xl bg-elevated hover:bg-white/15 text-xs font-bold text-white/75 transition">
+                Cancel
+              </button>
+              <button type="submit" class="px-4 py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-wide text-black transition" style="background-color: var(--accent-color);">
+                Save Preset
+              </button>
+            </div>
+          </form>
         </div>
-        <form id="addPresetForm" class="space-y-3">
-          <input id="newPresetInput" type="text" maxlength="60" placeholder="e.g., MEET AT THE BAR 🍹" class="w-full rounded-2xl bg-elevated border border-white/15 focus:border-white/40 focus:outline-none px-4 py-3 text-sm font-bold uppercase tracking-wide text-white placeholder:text-white/35 placeholder:normal-case placeholder:font-normal" />
+      </div>
+
+      <!-- Are You Sure Delete Confirmation Modal -->
+      <div id="confirmDeleteModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+        <div class="w-full max-w-xs rounded-3xl bg-surface border border-white/15 p-5 shadow-2xl space-y-4">
+          <div class="space-y-1.5">
+            <h3 id="confirmDeleteTitle" class="font-display font-extrabold text-base text-white">Are you sure?</h3>
+            <p id="confirmDeleteMessage" class="text-xs text-white/60 leading-relaxed">This action cannot be undone.</p>
+          </div>
           <div class="flex items-center justify-end gap-2">
-            <button id="cancelPresetBtn" type="button" class="px-4 py-2.5 rounded-xl bg-elevated hover:bg-white/15 text-xs font-bold text-white/75 transition">
+            <button id="cancelDeleteBtn" type="button" class="px-4 py-2.5 rounded-xl bg-elevated hover:bg-white/15 text-xs font-bold text-white/80 transition">
               Cancel
             </button>
-            <button type="submit" class="px-4 py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-wide text-black transition" style="background-color: var(--accent-color);">
-              Save Preset
+            <button id="confirmDeleteBtn" type="button" class="px-4 py-2.5 rounded-xl bg-red-500 hover:bg-red-400 active:scale-95 text-xs font-extrabold uppercase tracking-wide text-white transition">
+              Delete
             </button>
           </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- Are You Sure Delete Confirmation Modal -->
-    <div id="confirmDeleteModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
-      <div class="w-full max-w-xs rounded-3xl bg-surface border border-white/15 p-5 shadow-2xl space-y-4">
-        <div class="space-y-1.5">
-          <h3 id="confirmDeleteTitle" class="font-display font-extrabold text-base text-white">Are you sure?</h3>
-          <p id="confirmDeleteMessage" class="text-xs text-white/60 leading-relaxed">This action cannot be undone.</p>
-        </div>
-        <div class="flex items-center justify-end gap-2">
-          <button id="cancelDeleteBtn" type="button" class="px-4 py-2.5 rounded-xl bg-elevated hover:bg-white/15 text-xs font-bold text-white/80 transition">
-            Cancel
-          </button>
-          <button id="confirmDeleteBtn" type="button" class="px-4 py-2.5 rounded-xl bg-red-500 hover:bg-red-400 active:scale-95 text-xs font-extrabold uppercase tracking-wide text-white transition">
-            Delete
-          </button>
         </div>
       </div>
-    </div>
 
-    <!-- Toast Notification Banner -->
-    <div id="toastBanner" class="pointer-events-none fixed bottom-24 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-full bg-elevated/95 border border-white/15 text-xs font-bold text-white shadow-xl opacity-0 translate-y-2 transition-all duration-200"></div>
-  </div>
+      <!-- Toast Notification Banner -->
+      <div id="toastBanner" class="pointer-events-none fixed bottom-24 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-full bg-elevated/95 border border-white/15 text-xs font-bold text-white shadow-xl opacity-0 translate-y-2 transition-all duration-200"></div>
+    </div>
   </div>
 
   <script type="module">
@@ -602,6 +642,15 @@
         '#FF2A85': { glow: 'rgba(255, 42, 133, 0.42)', soft: 'rgba(255, 42, 133, 0.14)' },
       };
 
+      // Each swatch cycles through its chosen color, its color-wheel secondary color, and white
+      const BPM_PALETTES_BY_COLOR = {
+        '#39FF14': ['#39FF14', '#C82AFF', '#FFFFFF'],
+        '#FFFFFF': ['#FFFFFF', '#000000', '#FFFFFF'],
+        '#FFE600': ['#FFE600', '#5B21FF', '#FFFFFF'],
+        '#00F0FF': ['#00F0FF', '#A855F7', '#FFFFFF'],
+        '#FF2A85': ['#FF2A85', '#00F59B', '#FFFFFF'],
+      };
+
       const LOCAL_RECENT_KEY = '2loud_recent_v1';
       const LOCAL_PRESETS_KEY = '2loud_presets_v1';
 
@@ -613,10 +662,12 @@
         activeColor: '#39FF14',
         isLandscape: false,
         isShowMode: false,
+        showModeEnteredAt: 0,
         isPulseActive: false,
         pulseEffect: 'pulse',
         isCamArmed: false,
         hasUserTappedToType: false,
+        hasDismissedStartupHint: false,
       };
 
       // --- Firestore & Local Persistence Setup ---
@@ -667,7 +718,6 @@
         try {
           localStorage.setItem(LOCAL_RECENT_KEY, JSON.stringify(state.recent));
         } catch (err) {
-          // If storage quota is exceeded (e.g., many reaction photos), retry without photo blobs
           try {
             const stripped = state.recent.map(({ photo, ...rest }) => ({ ...rest, photo: null }));
             localStorage.setItem(LOCAL_RECENT_KEY, JSON.stringify(stripped));
@@ -716,6 +766,7 @@
       const pulseEffectOptions = document.querySelectorAll('.pulse-effect-option');
       const fireflyOverlay = document.getElementById('fireflyOverlay');
       const bpmFillWash = document.getElementById('bpmFillWash');
+      const bpmWaveLayer = document.getElementById('bpmWaveLayer');
       const replyClearBtn = document.getElementById('replyClearBtn');
 
       const messageInput = document.getElementById('messageInput');
@@ -769,22 +820,20 @@
       let pulseLongPressTimer = null;
       let suppressNextPulseClick = false;
 
-      // Microphone BPM detection state
+      // BPM audio & animation state
       let isMicListening = false;
       let micStarting = false;
       let micAudioCtx = null;
       let micStream = null;
       let micSourceNode = null;
-      let micLowpassFilter = null;
       let micAnalyser = null;
+      let micTimeData = null;
       let micRafId = null;
-      let micFreqData = null;
-      let micEnergyHistory = [];
-      let micBeatTimestamps = [];
-      let micLastBeatTime = 0;
+      let micPeakTimes = [];
+      let micLastPeakMs = 0;
       let micDetectedBpm = null;
-      let micNoiseFloorRms = 0.012;
-      let bpmDanceDecayTimer = null;
+      let bpmColorIndex = 0;
+      let bpmDecayTimer = null;
 
       function showToast(message) {
         if (!toastBanner || !message) return;
@@ -801,8 +850,18 @@
         }, 2000);
       }
 
+      function dismissStartupHint() {
+        if (!state.hasDismissedStartupHint) {
+          state.hasDismissedStartupHint = true;
+          if (emptyPrompt) {
+            emptyPrompt.classList.add('opacity-0');
+          }
+        }
+      }
+
       function focusMessageInput() {
         state.hasUserTappedToType = true;
+        dismissStartupHint();
         updateCaretVisibility();
         if (!messageInput) return;
         try {
@@ -810,6 +869,71 @@
         } catch (err) {
           messageInput.focus();
         }
+      }
+
+      function getCurrentBpmPaletteColor() {
+        const palette = BPM_PALETTES_BY_COLOR[state.activeColor] || BPM_PALETTES_BY_COLOR['#39FF14'];
+        return palette[bpmColorIndex % palette.length];
+      }
+
+      function resetBpmVisuals() {
+        if (bpmDecayTimer) {
+          clearTimeout(bpmDecayTimer);
+          bpmDecayTimer = null;
+        }
+        if (bpmFillWash) {
+          bpmFillWash.style.opacity = '0';
+          bpmFillWash.style.backgroundColor = 'var(--accent-color)';
+        }
+        if (bpmWaveLayer) {
+          bpmWaveLayer.style.opacity = '0';
+          bpmWaveLayer.style.transform = 'scale(1)';
+          bpmWaveLayer.style.backgroundColor = 'transparent';
+          bpmWaveLayer.style.boxShadow = 'none';
+        }
+      }
+
+      function renderBpmFrame(level, isPulseHit) {
+        if (!state.isPulseActive || state.pulseEffect !== 'bpm' || !billboardStage) return;
+
+        if (isPulseHit) {
+          bpmColorIndex = (bpmColorIndex + 1) % 3;
+        }
+
+        const layerColor = getCurrentBpmPaletteColor();
+        const clamped = Math.max(0, Math.min(1, level));
+        const activeScale = 1 + clamped * 0.035 + (isPulseHit ? 0.03 : 0);
+        const glowBlur = Math.round(14 + clamped * 46 + (isPulseHit ? 18 : 0));
+
+        billboardStage.style.borderRadius = '34px';
+        billboardStage.style.clipPath = 'inset(0 round 34px)';
+        billboardStage.style.borderColor = isPulseHit || clamped > 0.25 ? layerColor : 'rgba(255, 255, 255, 0.14)';
+        billboardStage.style.boxShadow = `inset 0 0 ${glowBlur}px ${Math.round(4 + clamped * 8)}px ${layerColor}`;
+
+        if (bpmFillWash) {
+          bpmFillWash.style.backgroundColor = layerColor;
+          const washOpacity = isPulseHit
+            ? Math.min(0.28, 0.08 + clamped * 0.2)
+            : Math.min(0.14, clamped * 0.14);
+          bpmFillWash.style.opacity = washOpacity.toFixed(3);
+        }
+
+        if (bpmWaveLayer) {
+          bpmWaveLayer.style.backgroundColor = layerColor;
+          bpmWaveLayer.style.boxShadow = `inset 0 0 ${glowBlur}px ${layerColor}`;
+          bpmWaveLayer.style.transform = `scale(${activeScale.toFixed(4)})`;
+          bpmWaveLayer.style.opacity = (isPulseHit ? Math.min(0.34, 0.12 + clamped * 0.22) : clamped * 0.12).toFixed(3);
+        }
+
+        if (bpmDecayTimer) {
+          clearTimeout(bpmDecayTimer);
+        }
+        bpmDecayTimer = setTimeout(() => {
+          if (!state.isPulseActive || state.pulseEffect !== 'bpm') return;
+          resetBpmVisuals();
+          billboardStage.style.boxShadow = 'inset 0 0 12px 1px var(--accent-soft)';
+          billboardStage.style.borderColor = 'rgba(255, 255, 255, 0.12)';
+        }, 140);
       }
 
       function setPulseState(enabled, effectName = null) {
@@ -820,6 +944,7 @@
 
         const shouldUseBpmMic = state.isPulseActive && state.pulseEffect === 'bpm';
         if (shouldUseBpmMic) {
+          bpmColorIndex = 0;
           if (!isMicListening && !micStarting) {
             startMicBpmDetection();
           }
@@ -827,19 +952,15 @@
           stopMicBpmDetection(true);
         }
 
-        if (bpmDanceDecayTimer) {
-          clearTimeout(bpmDanceDecayTimer);
-          bpmDanceDecayTimer = null;
-        }
-        if (bpmFillWash) {
-          bpmFillWash.style.opacity = '0';
-        }
+        resetBpmVisuals();
 
         if (billboardStage) {
           billboardStage.classList.remove('pulse-active', 'effect-strobe', 'effect-heartbeat', 'effect-beacon', 'effect-bpm');
           billboardStage.style.backgroundColor = '';
           billboardStage.style.boxShadow = '';
           billboardStage.style.borderColor = '';
+          billboardStage.style.borderRadius = '34px';
+          billboardStage.style.clipPath = 'inset(0 round 34px)';
           if (state.isPulseActive) {
             if (state.pulseEffect === 'strobe') {
               billboardStage.style.backgroundColor = '#000000';
@@ -855,6 +976,7 @@
               billboardStage.style.backgroundColor = '#000000';
               void billboardStage.offsetWidth;
               billboardStage.classList.add('effect-bpm');
+              renderBpmFrame(0.15, false);
             } else if (state.pulseEffect === 'pulse') {
               void billboardStage.offsetWidth;
               billboardStage.classList.add('pulse-active');
@@ -899,7 +1021,8 @@
             pulseDot.classList.remove('animate-pulse');
           }
         }
-          pulseEffectOptions.forEach((opt) => {
+
+        pulseEffectOptions.forEach((opt) => {
           const eff = opt.getAttribute('data-effect');
           const check = opt.querySelector('.effect-check');
           const isSelected = eff === state.pulseEffect;
@@ -917,38 +1040,6 @@
             if (check) check.classList.add('hidden');
           }
         });
-      }
-
-      function triggerBpmBackgroundDance(intensity, isBeatHit) {
-        if (!billboardStage || !state.isPulseActive || state.pulseEffect !== 'bpm') return;
-        const clamped = Math.max(0, Math.min(1, intensity));
-        const bgAlpha = isBeatHit ? Math.min(0.32, 0.12 + clamped * 0.2) : clamped * 0.12;
-        const glowBlur = Math.round(18 + clamped * 52);
-        const glowSpread = Math.round(3 + clamped * 10);
-
-        billboardStage.style.backgroundColor = `color-mix(in srgb, var(--accent-color) ${Math.round(bgAlpha * 100)}%, #000000)`;
-        billboardStage.style.boxShadow = `inset 0 0 ${glowBlur}px ${glowSpread}px var(--accent-glow), 0 0 ${Math.round(glowBlur * 0.6)}px var(--accent-soft)`;
-        billboardStage.style.borderColor = isBeatHit || clamped > 0.35 ? 'var(--accent-color)' : 'rgba(255, 255, 255, 0.16)';
-
-        if (bpmFillWash) {
-          const washOpacity = isBeatHit
-            ? Math.min(0.45, 0.14 + clamped * 0.31)
-            : Math.min(0.28, clamped * 0.28);
-          bpmFillWash.style.opacity = washOpacity.toFixed(3);
-        }
-
-        if (bpmDanceDecayTimer) {
-          clearTimeout(bpmDanceDecayTimer);
-        }
-        bpmDanceDecayTimer = setTimeout(() => {
-          if (!billboardStage || !state.isPulseActive || state.pulseEffect !== 'bpm') return;
-          billboardStage.style.backgroundColor = '#000000';
-          billboardStage.style.boxShadow = 'inset 0 0 12px 1px var(--accent-soft)';
-          billboardStage.style.borderColor = 'rgba(255, 255, 255, 0.12)';
-          if (bpmFillWash) {
-            bpmFillWash.style.opacity = '0';
-          }
-        }, 130);
       }
 
       function setPulseMenuOpen(open) {
@@ -993,6 +1084,11 @@
             btn.classList.add('opacity-75');
           }
         });
+
+        if (state.isPulseActive && state.pulseEffect === 'bpm') {
+          bpmColorIndex = 0;
+          renderBpmFrame(0.32, true);
+        }
       }
 
       function clearPendingCamTimers() {
@@ -1028,8 +1124,6 @@
             bpmMenuOptionLabel.textContent = `BPM · ${micDetectedBpm}`;
           } else if (isMicListening) {
             bpmMenuOptionLabel.textContent = 'BPM · Listening';
-          } else if (micDetectedBpm) {
-            bpmMenuOptionLabel.textContent = `BPM · ${micDetectedBpm}`;
           } else {
             bpmMenuOptionLabel.textContent = 'BPM';
           }
@@ -1039,125 +1133,47 @@
         }
       }
 
-      function estimateBpmFromBeats(timestamps) {
-        if (!Array.isArray(timestamps) || timestamps.length < 4) return null;
-        const intervalsMs = [];
-        for (let i = 1; i < timestamps.length; i++) {
-          const dt = timestamps[i] - timestamps[i - 1];
-          // Ignore double-triggers or long pauses outside ~65-185 BPM
-          if (dt >= 320 && dt <= 950) {
-            intervalsMs.push(dt);
-          }
-        }
-        if (intervalsMs.length < 3) return null;
-
-        // Use median beat interval so occasional missed or extra peaks don't skew BPM
-        const sorted = [...intervalsMs].sort((a, b) => a - b);
-        const mid = Math.floor(sorted.length / 2);
-        const medianInterval =
-          sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
-
-        let bpm = Math.round(60000 / medianInterval);
-        // Fold half-time / double-time estimates into a practical dance/venue window
-        while (bpm < 70) bpm *= 2;
-        while (bpm > 175) bpm = Math.round(bpm / 2);
-        return bpm;
-      }
-
       function processMicBeatFrame() {
-        if (!isMicListening || !micAnalyser || !micFreqData || !micAudioCtx) return;
+        if (!isMicListening || !micAnalyser || !micTimeData) return;
 
-        micAnalyser.getByteFrequencyData(micFreqData);
+        micAnalyser.getByteTimeDomainData(micTimeData);
 
-        // Focus on low-end frequencies (~35Hz - 145Hz) where kick drums and basslines sit
-        const sampleRate = micAudioCtx.sampleRate || 44100;
-        const nyquist = sampleRate / 2;
-        const binCount = micFreqData.length;
-        const startBin = Math.max(1, Math.floor((35 / nyquist) * binCount));
-        const endBin = Math.min(binCount - 1, Math.max(startBin + 1, Math.floor((145 / nyquist) * binCount)));
-
-        let lowSum = 0;
-        let lowSqSum = 0;
-        let lowCount = 0;
-        for (let i = startBin; i <= endBin; i++) {
-          const norm = micFreqData[i] / 255;
-          lowSum += micFreqData[i];
-          lowSqSum += norm * norm;
-          lowCount += 1;
+        let sumSq = 0;
+        for (let i = 0; i < micTimeData.length; i++) {
+          const centered = (micTimeData[i] - 128) / 128;
+          sumSq += centered * centered;
         }
-        const avgEnergy = lowCount > 0 ? lowSum / lowCount : 0;
-        const lowRms = lowCount > 0 ? Math.sqrt(lowSqSum / lowCount) : 0;
+        const rms = Math.sqrt(sumSq / micTimeData.length);
+        const normalizedLevel = Math.max(0, Math.min(1, rms * 5.5));
 
-        // Also compute overall broadband RMS to estimate dynamic dB level (~35 dB room floor to ~120 dB concert peak)
-        let allSqSum = 0;
-        for (let i = 0; i < binCount; i++) {
-          const norm = micFreqData[i] / 255;
-          allSqSum += norm * norm;
-        }
-        const overallRms = binCount > 0 ? Math.sqrt(allSqSum / binCount) : 0;
-
-        // Track steady ambient background noise (like room fans) slowly so constant hum is rejected
-        if (lowRms < micNoiseFloorRms * 1.25) {
-          micNoiseFloorRms = micNoiseFloorRms * 0.96 + Math.max(0.004, lowRms) * 0.04;
-        } else {
-          micNoiseFloorRms = micNoiseFloorRms * 0.995 + lowRms * 0.005;
-        }
-
-        // Map relative audio level onto a practical 35 dB (room tone + slight margin) to 120 dB (concert ceiling) scale
-        const floorRef = Math.max(0.006, micNoiseFloorRms * 1.1);
-        const safeRms = Math.max(floorRef, overallRms);
-        const dbGain = 20 * Math.log10(safeRms / floorRef);
-        // Anchor room tone baseline just above 35-40 dB (38 dB) and scale up to 120 dB at heavy peak
-        const estimatedDb = Math.max(35, Math.min(120, 38 + dbGain * 2.4));
-
-        // Dynamic range normalization:
-        // Low end (~38-40 dB) = minimal/off (0.0); High end (~105-115 dB) = full screen intensity (1.0)
-        const minActiveDb = 40;
-        const maxFullDb = 110;
-        const dynamicIntensity = Math.max(
-          0,
-          Math.min(1, (estimatedDb - minActiveDb) / (maxFullDb - minActiveDb))
-        );
-
-        micEnergyHistory.push(avgEnergy);
-        if (micEnergyHistory.length > 40) {
-          micEnergyHistory.shift();
-        }
-
-        const rollingAvg =
-          micEnergyHistory.reduce((acc, v) => acc + v, 0) / micEnergyHistory.length;
-
-        // Balanced threshold: rejects steady room/fan hum while catching music kick/bass hits
         const nowMs = performance.now();
-        const minBeatGapMs = 280;
-        const noiseGateEnergy = Math.max(22, micNoiseFloorRms * 255 * 1.35);
-        const beatThreshold = Math.max(noiseGateEnergy, rollingAvg * 1.22);
-        const isBeatHit =
-          estimatedDb >= minActiveDb &&
-          avgEnergy > beatThreshold &&
-          nowMs - micLastBeatTime >= minBeatGapMs;
+        const isPulseHit = rms > 0.045 && nowMs - micLastPeakMs >= 260;
 
-        if (isBeatHit) {
-          micLastBeatTime = nowMs;
-          micBeatTimestamps.push(nowMs);
-          if (micBeatTimestamps.length > 24) {
-            micBeatTimestamps.shift();
+        if (isPulseHit) {
+          micLastPeakMs = nowMs;
+          micPeakTimes.push(nowMs);
+          if (micPeakTimes.length > 16) {
+            micPeakTimes.shift();
           }
 
-          const computed = estimateBpmFromBeats(micBeatTimestamps);
-          if (computed) {
-            micDetectedBpm = micDetectedBpm
-              ? Math.round(micDetectedBpm * 0.65 + computed * 0.35)
-              : computed;
-            updateMicBpmButtonUI();
+          if (micPeakTimes.length >= 3) {
+            const intervals = [];
+            for (let i = 1; i < micPeakTimes.length; i++) {
+              const dt = micPeakTimes[i] - micPeakTimes[i - 1];
+              if (dt >= 270 && dt <= 1600) {
+                intervals.push(dt);
+              }
+            }
+            if (intervals.length >= 2) {
+              const avgMs = intervals.reduce((a, b) => a + b, 0) / intervals.length;
+              micDetectedBpm = Math.round(60000 / avgMs);
+              updateMicBpmButtonUI();
+            }
           }
         }
 
         if (state.isPulseActive && state.pulseEffect === 'bpm') {
-          const danceLevel = isBeatHit
-            ? Math.min(1, Math.max(dynamicIntensity, 0.35 + dynamicIntensity * 0.65))
-            : dynamicIntensity;
-          triggerBpmBackgroundDance(danceLevel, isBeatHit, estimatedDb);
+          renderBpmFrame(normalizedLevel, isPulseHit);
         }
 
         micRafId = requestAnimationFrame(processMicBeatFrame);
@@ -1166,10 +1182,7 @@
       function stopMicBpmDetection(silent = false) {
         isMicListening = false;
         micStarting = false;
-        if (bpmDanceDecayTimer) {
-          clearTimeout(bpmDanceDecayTimer);
-          bpmDanceDecayTimer = null;
-        }
+        resetBpmVisuals();
         if (micRafId !== null) {
           cancelAnimationFrame(micRafId);
           micRafId = null;
@@ -1177,10 +1190,6 @@
         if (micSourceNode) {
           try { micSourceNode.disconnect(); } catch (e) {}
           micSourceNode = null;
-        }
-        if (micLowpassFilter) {
-          try { micLowpassFilter.disconnect(); } catch (e) {}
-          micLowpassFilter = null;
         }
         if (micStream) {
           micStream.getTracks().forEach((track) => track.stop());
@@ -1191,10 +1200,9 @@
           micAudioCtx = null;
         }
         micAnalyser = null;
-        micFreqData = null;
-        micEnergyHistory = [];
-        micBeatTimestamps = [];
-        micLastBeatTime = 0;
+        micTimeData = null;
+        micPeakTimes = [];
+        micLastPeakMs = 0;
         updateMicBpmButtonUI();
         if (!silent) {
           showToast(micDetectedBpm ? `Mic stopped (${micDetectedBpm} BPM)` : 'Microphone stopped');
@@ -1218,11 +1226,7 @@
         micStarting = true;
         try {
           micStream = await navigator.mediaDevices.getUserMedia({
-            audio: {
-              echoCancellation: false,
-              noiseSuppression: false,
-              autoGainControl: false,
-            },
+            audio: true,
             video: false,
           });
 
@@ -1237,21 +1241,14 @@
           }
 
           micSourceNode = micAudioCtx.createMediaStreamSource(micStream);
-          micLowpassFilter = micAudioCtx.createBiquadFilter();
-          micLowpassFilter.type = 'lowpass';
-          micLowpassFilter.frequency.setValueAtTime(175, micAudioCtx.currentTime);
-
           micAnalyser = micAudioCtx.createAnalyser();
-          micAnalyser.fftSize = 1024;
-          micAnalyser.smoothingTimeConstant = 0.65;
-          micFreqData = new Uint8Array(micAnalyser.frequencyBinCount);
+          micAnalyser.fftSize = 512;
+          micTimeData = new Uint8Array(micAnalyser.fftSize);
 
-          micSourceNode.connect(micLowpassFilter);
-          micLowpassFilter.connect(micAnalyser);
+          micSourceNode.connect(micAnalyser);
 
-          micEnergyHistory = [];
-          micBeatTimestamps = [];
-          micLastBeatTime = 0;
+          micPeakTimes = [];
+          micLastPeakMs = 0;
           micStarting = false;
           isMicListening = true;
           updateMicBpmButtonUI();
@@ -1273,7 +1270,6 @@
         if (!camStream || !reactionVideo || !reactionCanvas) return;
         const rawW = reactionVideo.videoWidth || 640;
         const rawH = reactionVideo.videoHeight || 480;
-        // Scale down cleanly so snapshots stay lightweight for storage & memory
         const maxDim = 360;
         const scale = Math.min(1, maxDim / Math.max(rawW, rawH));
         const width = Math.round(rawW * scale);
@@ -1284,7 +1280,6 @@
         const ctx = reactionCanvas.getContext('2d');
         if (!ctx) return;
 
-        // Mirror horizontally so front-facing selfie view looks natural
         ctx.save();
         ctx.translate(width, 0);
         ctx.scale(-1, 1);
@@ -1393,6 +1388,7 @@
         state.text = nextText || '';
         if (state.text) {
           state.hasUserTappedToType = true;
+          dismissStartupHint();
         }
         if (syncInput && messageInput && messageInput.value !== state.text) {
           messageInput.value = state.text;
@@ -1477,7 +1473,6 @@
         const now = Date.now();
         const entryId = `msg_${now}_${Math.random().toString(36).slice(2, 8)}`;
 
-        // Only deduplicate text messages; always keep distinct reaction captures
         const duplicate = !allowPhotoOnly
           ? state.recent.find(
               (item) =>
@@ -1555,7 +1550,6 @@
 
         if (!db || !currentUser || !itemsToDelete.length) return;
         try {
-          // Delete in batches of 450 to stay safely within Firestore batch limits
           for (let i = 0; i < itemsToDelete.length; i += 450) {
             const batch = writeBatch(db);
             itemsToDelete.slice(i, i + 450).forEach((item) => {
@@ -1639,7 +1633,6 @@
 
           row.appendChild(selectBtn);
 
-          // Clickable reaction photo thumbnail if captured
           if (item.photo) {
             const thumbBtn = document.createElement('button');
             thumbBtn.type = 'button';
@@ -1658,7 +1651,6 @@
             row.appendChild(thumbBtn);
           }
 
-          // Individual delete button for this recent message
           const deleteBtn = document.createElement('button');
           deleteBtn.type = 'button';
           deleteBtn.setAttribute('aria-label', `Delete ${item.text}`);
@@ -1737,9 +1729,6 @@
           const horizontalPad = 24;
           const verticalPad = state.isShowMode ? 56 : 20;
 
-          // Measure the outer stage rect and use its unrotated dimensions as the
-          // true visual bounding box so rotating 90deg never measures a mid-transition
-          // or pre-rotated box incorrectly.
           const stageWidth = stageRect.width;
           const stageHeight = stageRect.height;
 
@@ -1747,8 +1736,6 @@
           let availableHeight;
 
           if (state.isLandscape) {
-            // Rotated 90deg: visual horizontal axis comes from stageHeight,
-            // visual vertical axis comes from stageWidth.
             rotatableContainer.style.width = `${stageHeight}px`;
             rotatableContainer.style.height = `${stageWidth}px`;
             availableWidth = Math.max(32, stageHeight - horizontalPad);
@@ -1760,13 +1747,9 @@
             availableHeight = Math.max(32, stageHeight - verticalPad);
           }
 
-          // Constrain the text block box to the available width so multi-line wrapping
-          // breaks cleanly between words instead of expanding past the container.
           textFitBox.style.width = `${availableWidth}px`;
           textFitBox.style.height = `${availableHeight}px`;
 
-          // Ensure text width allows lines to expand toward full availableWidth
-          // while still wrapping strictly at spaces between words.
           billboardText.style.maxWidth = `${availableWidth}px`;
           billboardText.style.width = '100%';
           billboardText.style.display = 'block';
@@ -1775,8 +1758,6 @@
           billboardText.style.overflowWrap = 'normal';
           billboardText.style.hyphens = 'none';
 
-          // Hide caret during binary search measurement so width never fluctuates
-          const prevCaretVisibility = billboardCaret ? billboardCaret.style.visibility : 'visible';
           if (billboardCaret) {
             billboardCaret.style.visibility = 'hidden';
           }
@@ -1787,8 +1768,6 @@
           let high = maxSize;
           let bestSize = minSize;
 
-          // Temporarily disable CSS transform transition during measurement so
-          // bounding box readings reflect the exact target orientation immediately.
           const prevTransition = rotatableContainer.style.transition;
           rotatableContainer.style.transition = 'none';
 
@@ -1837,8 +1816,6 @@
         });
       }
 
-      // Run multiple passes across orientation changes so CSS layout/viewport
-      // shifts settle completely before locking in the largest possible font size.
       function handleOrientationChange() {
         scheduleFit();
       }
@@ -2070,6 +2047,7 @@
       }
 
       function enterShowMode() {
+        dismissStartupHint();
         const current = state.text.trim();
         let entryId = null;
         if (current || state.isCamArmed) {
@@ -2079,6 +2057,7 @@
           }
         }
         state.isShowMode = true;
+        state.showModeEnteredAt = performance.now();
         if (topBar) topBar.classList.add('hidden');
         if (bottomDock) bottomDock.classList.add('hidden');
         if (cornerGuides) cornerGuides.classList.add('opacity-0');
@@ -2094,13 +2073,21 @@
       function exitShowMode() {
         if (!state.isShowMode) return;
         clearPendingCamTimers();
+        const elapsedMs = state.showModeEnteredAt ? performance.now() - state.showModeEnteredAt : 0;
         state.isShowMode = false;
+        state.showModeEnteredAt = 0;
         if (topBar) topBar.classList.remove('hidden');
         if (bottomDock) bottomDock.classList.remove('hidden');
         if (cornerGuides) cornerGuides.classList.remove('opacity-0');
         if (billboardCaret) billboardCaret.style.visibility = 'visible';
         if (showModeOverlayHint) showModeOverlayHint.classList.add('hidden');
-        scheduleFit();
+
+        if (elapsedMs >= 10000 && state.text.trim().length > 0) {
+          setMessageText('');
+          showToast('Message cleared after 10s in Show Mode');
+        } else {
+          scheduleFit();
+        }
       }
 
       function togglePulse() {
@@ -2119,7 +2106,9 @@
       // --- Event Listeners ---
       if (messageInput) {
         messageInput.value = state.text;
+        messageInput.addEventListener('focus', dismissStartupHint);
         messageInput.addEventListener('input', (e) => {
+          dismissStartupHint();
           setMessageText(e.target.value, false);
         });
       }
@@ -2132,7 +2121,6 @@
         });
       }
 
-      // Tapping billboard stage focuses input (or exits Show Mode first)
       if (billboardStage) {
         billboardStage.addEventListener('click', () => {
           if (state.isShowMode) {
@@ -2305,7 +2293,6 @@
         });
       }
 
-      // Color swatch switcher
       colorSwatches.forEach((swatch) => {
         swatch.addEventListener('click', () => {
           const color = swatch.getAttribute('data-color');
@@ -2313,7 +2300,6 @@
         });
       });
 
-      // Recalculate auto-scaling text on window resize, orientation change, and ResizeObserver
       window.addEventListener('resize', handleOrientationChange);
       window.addEventListener('orientationchange', handleOrientationChange);
       if (window.visualViewport) {
@@ -2373,7 +2359,6 @@
           }
 
           if (currentUser) {
-            // Listen to all saved recent messages (no artificial cap)
             const recentColRef = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'recentMessages');
             onSnapshot(
               recentColRef,
@@ -2394,7 +2379,6 @@
                     });
                   }
                 });
-                // Sort newest-first in JavaScript memory
                 loaded.sort((a, b) => b.updatedAt - a.updatedAt);
                 state.recent = loaded;
                 persistRecentLocally();
@@ -2408,7 +2392,6 @@
               }
             );
 
-            // Listen to saved custom presets
             const prefsDocRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'settings', 'preferences');
             onSnapshot(
               prefsDocRef,
