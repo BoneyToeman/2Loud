@@ -80,13 +80,13 @@
     // enable dropdown options
     pulseMenuOptions.forEach(btn => btn.classList.remove('opacity-40'));
     // enable main Pulse button if present
-    if (window.pulseBtn) pulseBtn.classList.remove('opacity-40');
+    if (window.pulseBtn) window.pulseBtn.classList.remove('opacity-40');
   }
   function disableAllPulseOptions() {
     // dim dropdown options (still clickable to show warning)
     pulseMenuOptions.forEach(btn => btn.classList.add('opacity-40'));
     // dim main Pulse button
-    if (window.pulseBtn) pulseBtn.classList.add('opacity-40');
+    if (window.pulseBtn) window.pulseBtn.classList.add('opacity-40');
   }
 
   function initEpilepsyFlow() {
@@ -109,10 +109,17 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
+    // Gather dropdown effect options
     pulseMenuOptions = Array.from(document.querySelectorAll('.pulse-effect-option'));
     pulseMenuOptions.forEach(btn => {
       btn.addEventListener('click', interceptEffectClick, true);
     });
+    // Main Pulse button gating
+    window.pulseBtn = document.getElementById('pulseBtn');
+    if (window.pulseBtn) {
+      window.pulseBtn.addEventListener('click', interceptEffectClick, true);
+    }
+    // Initialize warning state and UI
     initEpilepsyFlow();
   });
   </script>
