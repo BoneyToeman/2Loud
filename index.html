@@ -77,11 +77,16 @@
   }
 
     function enableAllPulseOptions() {
+    // enable dropdown options
     pulseMenuOptions.forEach(btn => btn.classList.remove('opacity-40'));
+    // enable main Pulse button if present
+    if (window.pulseBtn) pulseBtn.classList.remove('opacity-40');
   }
   function disableAllPulseOptions() {
-    // visually dim but keep clickable so warning can re‑appear on each attempt
+    // dim dropdown options (still clickable to show warning)
     pulseMenuOptions.forEach(btn => btn.classList.add('opacity-40'));
+    // dim main Pulse button
+    if (window.pulseBtn) pulseBtn.classList.add('opacity-40');
   }
 
   function initEpilepsyFlow() {
