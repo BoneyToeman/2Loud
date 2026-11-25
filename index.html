@@ -122,81 +122,6 @@
       animation: strobeFlash 0.52s ease-in-out infinite;
     }
 
-    /* Firefly full illuminated border with random segments flaring and dissipating */
-    @keyframes fireflyFlareA {
-      0%, 100% {
-        opacity: 0.35;
-        box-shadow: 0 0 8px var(--accent-soft);
-      }
-      16%, 28% {
-        opacity: 1;
-        box-shadow: 0 0 22px var(--accent-color), 0 0 36px var(--accent-glow);
-      }
-      54% {
-        opacity: 0.35;
-        box-shadow: 0 0 8px var(--accent-soft);
-      }
-    }
-    @keyframes fireflyFlareB {
-      0%, 32% {
-        opacity: 0.35;
-        box-shadow: 0 0 8px var(--accent-soft);
-      }
-      46%, 60% {
-        opacity: 1;
-        box-shadow: 0 0 22px var(--accent-color), 0 0 36px var(--accent-glow);
-      }
-      86%, 100% {
-        opacity: 0.35;
-        box-shadow: 0 0 8px var(--accent-soft);
-      }
-    }
-    .firefly-layer {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      z-index: 5;
-      border-radius: 34px;
-      clip-path: inset(0 round 34px);
-      border: 3px solid var(--accent-color);
-      opacity: 0.42;
-      box-shadow: inset 0 0 18px 2px var(--accent-soft), 0 0 10px var(--accent-soft);
-    }
-    .firefly-seg {
-      position: absolute;
-      background-color: var(--accent-color);
-      border-radius: 9999px;
-      opacity: 0.35;
-    }
-    .firefly-seg-top {
-      top: 0;
-      left: 12%;
-      width: 28%;
-      height: 4px;
-      animation: fireflyFlareA 3.4s ease-in-out infinite 0.2s;
-    }
-    .firefly-seg-right {
-      top: 22%;
-      right: 0;
-      width: 4px;
-      height: 26%;
-      animation: fireflyFlareB 4.1s ease-in-out infinite 1.1s;
-    }
-    .firefly-seg-bottom {
-      bottom: 0;
-      right: 16%;
-      width: 30%;
-      height: 4px;
-      animation: fireflyFlareA 3.8s ease-in-out infinite 1.9s;
-    }
-    .firefly-seg-left {
-      bottom: 18%;
-      left: 0;
-      width: 4px;
-      height: 28%;
-      animation: fireflyFlareB 4.6s ease-in-out infinite 0.6s;
-    }
-
     /* Double-beat lub-dub heartbeat border surge */
     @keyframes heartbeatSurge {
       0%, 100% {
@@ -261,11 +186,11 @@
       border-color: rgba(255, 255, 255, 0.2);
     }
 
-    /* Beat-driven background dance pulse */
+    /* Beat-driven background dance pulse (rate-limited for photosensitive safety) */
     .effect-bpm {
       border-radius: 34px !important;
       clip-path: inset(0 round 34px);
-      transition: background-color 85ms ease-out, box-shadow 105ms ease-out, border-color 105ms ease-out;
+      transition: background-color 420ms ease-in-out, box-shadow 260ms ease-out, border-color 360ms ease-in-out;
     }
     .bpm-fill-wash {
       position: absolute;
@@ -276,7 +201,7 @@
       border-radius: 34px;
       clip-path: inset(0 round 34px);
       background-color: var(--accent-color);
-      transition: opacity 85ms ease-out, background-color 90ms ease-out;
+      transition: opacity 260ms ease-out, background-color 420ms ease-in-out;
     }
     .bpm-wave-layer {
       position: absolute;
@@ -286,7 +211,7 @@
       opacity: 0;
       border-radius: 34px;
       clip-path: inset(0 round 34px);
-      transition: transform 90ms ease-out, opacity 90ms ease-out, background-color 90ms ease-out, box-shadow 110ms ease-out;
+      transition: transform 240ms ease-out, opacity 260ms ease-out, background-color 420ms ease-in-out, box-shadow 280ms ease-out;
     }
 
     /* 90-degree landscape billboard rotation */
@@ -359,13 +284,6 @@
         <div id="bpmFillWash" class="bpm-fill-wash" aria-hidden="true"></div>
         <!-- BPM Visualizer Wave Layer -->
         <div id="bpmWaveLayer" class="bpm-wave-layer" aria-hidden="true"></div>
-        <!-- Firefly border flicker segments -->
-        <div id="fireflyOverlay" class="firefly-layer hidden" aria-hidden="true">
-          <span class="firefly-seg firefly-seg-top"></span>
-          <span class="firefly-seg firefly-seg-right"></span>
-          <span class="firefly-seg firefly-seg-bottom"></span>
-          <span class="firefly-seg firefly-seg-left"></span>
-        </div>
 
         <!-- Subtle 3s Reaction Cam Countdown Pill in Show Mode -->
         <div id="camCountdownPill" class="hidden pointer-events-none absolute top-3 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/75 border border-white/15 backdrop-blur-md text-[11px] font-bold tracking-wide text-white/90">
@@ -651,6 +569,18 @@
         '#FF2A85': ['#FF2A85', '#00F59B', '#FFFFFF'],
       };
 
+      const VALID_PULSE_EFFECTS = ['pulse', 'strobe', 'heartbeat', 'beacon', 'bpm'];
+
+      function normalizePulseEffect(effectName) {
+        return VALID_PULSE_EFFECTS.includes(effectName) ? effectName : 'pulse';
+      }
+
+      function formatPulseEffectLabel(effectName) {
+        const normalized = normalizePulseEffect(effectName);
+        if (normalized === 'bpm') return 'BPM';
+        return normalized.charAt(0).toUpperCase() + normalized.slice(1);
+      }
+
       const LOCAL_RECENT_KEY = '2loud_recent_v1';
       const LOCAL_PRESETS_KEY = '2loud_presets_v1';
 
@@ -684,16 +614,20 @@
             if (Array.isArray(parsedRecent)) {
               state.recent = parsedRecent
                 .filter((item) => item && typeof item.text === 'string' && item.text.trim())
-                .map((item) => ({
-                  id: item.id || `msg_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
-                  text: item.text,
-                  color: item.color || '#39FF14',
-                  isPulseActive: Boolean(item.isPulseActive),
-                  isLandscape: Boolean(item.isLandscape),
-                  isPhotoOnly: Boolean(item.isPhotoOnly),
-                  photo: item.photo || null,
-                  updatedAt: Number(item.updatedAt) || 0,
-                }))
+                .map((item) => {
+                  const isPulseActive = Boolean(item.isPulseActive);
+                  return {
+                    id: item.id || `msg_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+                    text: item.text,
+                    color: item.color || '#39FF14',
+                    isPulseActive,
+                    pulseEffect: isPulseActive ? normalizePulseEffect(item.pulseEffect) : null,
+                    isLandscape: Boolean(item.isLandscape),
+                    isPhotoOnly: Boolean(item.isPhotoOnly),
+                    photo: item.photo || null,
+                    updatedAt: Number(item.updatedAt) || 0,
+                  };
+                })
                 .sort((a, b) => b.updatedAt - a.updatedAt);
             }
           }
@@ -764,7 +698,6 @@
       const pulseDot = document.getElementById('pulseDot');
       const pulseMenu = document.getElementById('pulseMenu');
       const pulseEffectOptions = document.querySelectorAll('.pulse-effect-option');
-      const fireflyOverlay = document.getElementById('fireflyOverlay');
       const bpmFillWash = document.getElementById('bpmFillWash');
       const bpmWaveLayer = document.getElementById('bpmWaveLayer');
       const replyClearBtn = document.getElementById('replyClearBtn');
@@ -821,6 +754,9 @@
       let suppressNextPulseClick = false;
 
       // BPM audio & animation state
+      // Visual caps keep luminance pulses < 2 Hz and color shifts <= ~1.2 Hz (below WCAG 2.3.1 3-flashes/sec threshold)
+      const BPM_VISUAL_PULSE_COOLDOWN_MS = 520;
+      const BPM_COLOR_CHANGE_COOLDOWN_MS = 850;
       let isMicListening = false;
       let micStarting = false;
       let micAudioCtx = null;
@@ -834,6 +770,9 @@
       let micDetectedBpm = null;
       let bpmColorIndex = 0;
       let bpmDecayTimer = null;
+      let bpmLastVisualPulseMs = 0;
+      let bpmLastColorChangeMs = 0;
+      let bpmSmoothedLevel = 0;
 
       function showToast(message) {
         if (!toastBanner || !message) return;
@@ -877,6 +816,7 @@
       }
 
       function resetBpmVisuals() {
+        bpmSmoothedLevel = 0;
         if (bpmDecayTimer) {
           clearTimeout(bpmDecayTimer);
           bpmDecayTimer = null;
@@ -893,28 +833,56 @@
         }
       }
 
-      function renderBpmFrame(level, isPulseHit) {
+      function renderBpmFrame(level, isPulseHit, options = {}) {
         if (!state.isPulseActive || state.pulseEffect !== 'bpm' || !billboardStage) return;
 
-        if (isPulseHit) {
+        const prefersReducedMotion =
+          typeof window.matchMedia === 'function' &&
+          window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const nowMs = performance.now();
+        const force = Boolean(options.force);
+
+        const allowVisualHit =
+          isPulseHit &&
+          !prefersReducedMotion &&
+          (force || nowMs - bpmLastVisualPulseMs >= BPM_VISUAL_PULSE_COOLDOWN_MS);
+
+        if (allowVisualHit) {
+          bpmLastVisualPulseMs = nowMs;
+        }
+
+        if (
+          isPulseHit &&
+          !prefersReducedMotion &&
+          (force || nowMs - bpmLastColorChangeMs >= BPM_COLOR_CHANGE_COOLDOWN_MS)
+        ) {
           bpmColorIndex = (bpmColorIndex + 1) % 3;
+          bpmLastColorChangeMs = nowMs;
+        } else if (force) {
+          bpmLastColorChangeMs = nowMs;
         }
 
         const layerColor = getCurrentBpmPaletteColor();
         const clamped = Math.max(0, Math.min(1, level));
-        const activeScale = 1 + clamped * 0.035 + (isPulseHit ? 0.03 : 0);
-        const glowBlur = Math.round(14 + clamped * 46 + (isPulseHit ? 18 : 0));
+        const activeScale = prefersReducedMotion
+          ? 1
+          : 1 + clamped * 0.02 + (allowVisualHit ? 0.015 : 0);
+        const glowBlur = prefersReducedMotion
+          ? 18
+          : Math.round(14 + clamped * 28 + (allowVisualHit ? 10 : 0));
 
         billboardStage.style.borderRadius = '34px';
         billboardStage.style.clipPath = 'inset(0 round 34px)';
-        billboardStage.style.borderColor = isPulseHit || clamped > 0.25 ? layerColor : 'rgba(255, 255, 255, 0.14)';
-        billboardStage.style.boxShadow = `inset 0 0 ${glowBlur}px ${Math.round(4 + clamped * 8)}px ${layerColor}`;
+        billboardStage.style.borderColor = allowVisualHit || clamped > 0.25 ? layerColor : 'rgba(255, 255, 255, 0.14)';
+        billboardStage.style.boxShadow = `inset 0 0 ${glowBlur}px ${Math.round(4 + clamped * 5)}px ${layerColor}`;
 
         if (bpmFillWash) {
           bpmFillWash.style.backgroundColor = layerColor;
-          const washOpacity = isPulseHit
-            ? Math.min(0.28, 0.08 + clamped * 0.2)
-            : Math.min(0.14, clamped * 0.14);
+          const washOpacity = prefersReducedMotion
+            ? 0.06
+            : allowVisualHit
+              ? Math.min(0.14, 0.06 + clamped * 0.08)
+              : Math.min(0.08, 0.03 + clamped * 0.05);
           bpmFillWash.style.opacity = washOpacity.toFixed(3);
         }
 
@@ -922,7 +890,12 @@
           bpmWaveLayer.style.backgroundColor = layerColor;
           bpmWaveLayer.style.boxShadow = `inset 0 0 ${glowBlur}px ${layerColor}`;
           bpmWaveLayer.style.transform = `scale(${activeScale.toFixed(4)})`;
-          bpmWaveLayer.style.opacity = (isPulseHit ? Math.min(0.34, 0.12 + clamped * 0.22) : clamped * 0.12).toFixed(3);
+          const waveOpacity = prefersReducedMotion
+            ? 0.04
+            : allowVisualHit
+              ? Math.min(0.18, 0.07 + clamped * 0.11)
+              : Math.min(0.08, clamped * 0.08);
+          bpmWaveLayer.style.opacity = waveOpacity.toFixed(3);
         }
 
         if (bpmDecayTimer) {
@@ -930,14 +903,18 @@
         }
         bpmDecayTimer = setTimeout(() => {
           if (!state.isPulseActive || state.pulseEffect !== 'bpm') return;
-          resetBpmVisuals();
-          billboardStage.style.boxShadow = 'inset 0 0 12px 1px var(--accent-soft)';
-          billboardStage.style.borderColor = 'rgba(255, 255, 255, 0.12)';
-        }, 140);
+          if (bpmFillWash) bpmFillWash.style.opacity = '0.035';
+          if (bpmWaveLayer) {
+            bpmWaveLayer.style.opacity = '0';
+            bpmWaveLayer.style.transform = 'scale(1)';
+          }
+          billboardStage.style.boxShadow = 'inset 0 0 14px 2px var(--accent-soft)';
+          billboardStage.style.borderColor = 'rgba(255, 255, 255, 0.14)';
+        }, 320);
       }
 
       function setPulseState(enabled, effectName = null) {
-        if (effectName && ['pulse', 'strobe', 'heartbeat', 'beacon', 'bpm'].includes(effectName)) {
+        if (effectName && VALID_PULSE_EFFECTS.includes(effectName)) {
           state.pulseEffect = effectName;
         }
         state.isPulseActive = Boolean(enabled);
@@ -976,7 +953,9 @@
               billboardStage.style.backgroundColor = '#000000';
               void billboardStage.offsetWidth;
               billboardStage.classList.add('effect-bpm');
-              renderBpmFrame(0.15, false);
+              bpmLastVisualPulseMs = 0;
+              bpmLastColorChangeMs = 0;
+              renderBpmFrame(0.15, false, { force: true });
             } else if (state.pulseEffect === 'pulse') {
               void billboardStage.offsetWidth;
               billboardStage.classList.add('pulse-active');
@@ -984,17 +963,11 @@
           }
         }
 
-        if (fireflyOverlay) {
-          fireflyOverlay.classList.add('hidden');
-        }
-
         if (pulseBtnLabel) {
           if (state.pulseEffect === 'bpm') {
             pulseBtnLabel.textContent = micDetectedBpm ? `${micDetectedBpm} BPM` : 'BPM';
-          } else if (state.pulseEffect && state.pulseEffect !== 'pulse') {
-            pulseBtnLabel.textContent = state.pulseEffect.charAt(0).toUpperCase() + state.pulseEffect.slice(1);
           } else {
-            pulseBtnLabel.textContent = 'Pulse';
+            pulseBtnLabel.textContent = formatPulseEffectLabel(state.pulseEffect);
           }
         }
 
@@ -1063,6 +1036,7 @@
       function updateCaretVisibility() {
         if (!billboardCaret) return;
         const shouldShowCaret = !state.isShowMode && (state.hasUserTappedToType || Boolean(state.text));
+        billboardCaret.style.display = shouldShowCaret ? 'inline-block' : 'none';
         billboardCaret.style.visibility = shouldShowCaret ? 'visible' : 'hidden';
       }
 
@@ -1087,7 +1061,9 @@
 
         if (state.isPulseActive && state.pulseEffect === 'bpm') {
           bpmColorIndex = 0;
-          renderBpmFrame(0.32, true);
+          bpmLastColorChangeMs = 0;
+          bpmLastVisualPulseMs = 0;
+          renderBpmFrame(0.25, false, { force: true });
         }
       }
 
@@ -1172,8 +1148,10 @@
           }
         }
 
+        bpmSmoothedLevel = bpmSmoothedLevel * 0.82 + normalizedLevel * 0.18;
+
         if (state.isPulseActive && state.pulseEffect === 'bpm') {
-          renderBpmFrame(normalizedLevel, isPulseHit);
+          renderBpmFrame(bpmSmoothedLevel, isPulseHit);
         }
 
         micRafId = requestAnimationFrame(processMicBeatFrame);
@@ -1203,9 +1181,13 @@
         micTimeData = null;
         micPeakTimes = [];
         micLastPeakMs = 0;
+        bpmLastVisualPulseMs = 0;
+        bpmLastColorChangeMs = 0;
+        const lastDetectedBpm = micDetectedBpm;
+        micDetectedBpm = null;
         updateMicBpmButtonUI();
         if (!silent) {
-          showToast(micDetectedBpm ? `Mic stopped (${micDetectedBpm} BPM)` : 'Microphone stopped');
+          showToast(lastDetectedBpm ? `Mic stopped (${lastDetectedBpm} BPM)` : 'Microphone stopped');
         }
       }
 
@@ -1249,6 +1231,9 @@
 
           micPeakTimes = [];
           micLastPeakMs = 0;
+          bpmLastVisualPulseMs = 0;
+          bpmLastColorChangeMs = 0;
+          bpmSmoothedLevel = 0;
           micStarting = false;
           isMicListening = true;
           updateMicBpmButtonUI();
@@ -1472,6 +1457,7 @@
         const displayText = clean || 'REACTION SNAPSHOT';
         const now = Date.now();
         const entryId = `msg_${now}_${Math.random().toString(36).slice(2, 8)}`;
+        const activePulseEffect = state.isPulseActive ? normalizePulseEffect(state.pulseEffect) : null;
 
         const duplicate = !allowPhotoOnly
           ? state.recent.find(
@@ -1480,6 +1466,7 @@
                 item.text === displayText &&
                 item.color === state.activeColor &&
                 Boolean(item.isPulseActive) === state.isPulseActive &&
+                (Boolean(item.isPulseActive) ? normalizePulseEffect(item.pulseEffect) : null) === activePulseEffect &&
                 Boolean(item.isLandscape) === state.isLandscape
             )
           : null;
@@ -1492,6 +1479,7 @@
           text: displayText,
           color: state.activeColor,
           isPulseActive: state.isPulseActive,
+          pulseEffect: activePulseEffect,
           isLandscape: state.isLandscape,
           isPhotoOnly: allowPhotoOnly && !clean,
           photo: existingPhoto,
@@ -1510,6 +1498,7 @@
               text: newEntry.text,
               color: newEntry.color,
               isPulseActive: newEntry.isPulseActive,
+              pulseEffect: newEntry.pulseEffect,
               isLandscape: newEntry.isLandscape,
               isPhotoOnly: newEntry.isPhotoOnly,
               photo: newEntry.photo || null,
@@ -1615,7 +1604,7 @@
           if (item.isPulseActive) {
             const pulseBadge = document.createElement('span');
             pulseBadge.className = 'px-1.5 py-0.5 rounded-md bg-white/10 text-[10px] font-bold text-white/70';
-            pulseBadge.textContent = 'PULSE';
+            pulseBadge.textContent = normalizePulseEffect(item.pulseEffect).toUpperCase();
             badgesWrap.appendChild(pulseBadge);
           }
 
@@ -1623,8 +1612,12 @@
           selectBtn.appendChild(badgesWrap);
 
           selectBtn.addEventListener('click', () => {
+            const shouldEnablePulse = Boolean(item.isPulseActive);
             applyColorTheme(item.color || '#39FF14');
-            setPulseState(Boolean(item.isPulseActive));
+            setPulseState(
+              shouldEnablePulse,
+              shouldEnablePulse ? normalizePulseEffect(item.pulseEffect) : null
+            );
             setLandscapeState(Boolean(item.isLandscape));
             setMessageText(item.text);
             closeRecentDrawer();
@@ -1710,7 +1703,7 @@
 
           const rawText = state.text;
           const trimmedText = rawText.trim();
-          billboardTextContent.textContent = rawText;
+          billboardTextContent.textContent = state.isShowMode ? trimmedText : rawText;
 
           if (!trimmedText) {
             if (emptyPrompt) emptyPrompt.classList.remove('hidden');
@@ -1759,6 +1752,9 @@
           billboardText.style.hyphens = 'none';
 
           if (billboardCaret) {
+            if (state.isShowMode) {
+              billboardCaret.style.display = 'none';
+            }
             billboardCaret.style.visibility = 'hidden';
           }
 
@@ -2061,7 +2057,7 @@
         if (topBar) topBar.classList.add('hidden');
         if (bottomDock) bottomDock.classList.add('hidden');
         if (cornerGuides) cornerGuides.classList.add('opacity-0');
-        if (billboardCaret) billboardCaret.style.visibility = 'hidden';
+        updateCaretVisibility();
         if (showModeOverlayHint) showModeOverlayHint.classList.remove('hidden');
         scheduleFit();
 
@@ -2079,7 +2075,7 @@
         if (topBar) topBar.classList.remove('hidden');
         if (bottomDock) bottomDock.classList.remove('hidden');
         if (cornerGuides) cornerGuides.classList.remove('opacity-0');
-        if (billboardCaret) billboardCaret.style.visibility = 'visible';
+        updateCaretVisibility();
         if (showModeOverlayHint) showModeOverlayHint.classList.add('hidden');
 
         if (elapsedMs >= 10000 && state.text.trim().length > 0) {
@@ -2181,10 +2177,10 @@
       pulseEffectOptions.forEach((opt) => {
         opt.addEventListener('click', (e) => {
           e.stopPropagation();
-          const eff = opt.getAttribute('data-effect') || 'pulse';
+          const eff = normalizePulseEffect(opt.getAttribute('data-effect'));
           setPulseState(true, eff);
           setPulseMenuOpen(false);
-          showToast(`${eff.charAt(0).toUpperCase() + eff.slice(1)} active`);
+          showToast(`${formatPulseEffectLabel(eff)} active`);
         });
       });
 
@@ -2367,11 +2363,13 @@
                 snapshot.forEach((docSnap) => {
                   const data = docSnap.data();
                   if (data && data.text) {
+                    const isPulseActive = Boolean(data.isPulseActive);
                     loaded.push({
                       id: docSnap.id,
                       text: data.text,
                       color: data.color || '#39FF14',
-                      isPulseActive: Boolean(data.isPulseActive),
+                      isPulseActive,
+                      pulseEffect: isPulseActive ? normalizePulseEffect(data.pulseEffect) : null,
                       isLandscape: Boolean(data.isLandscape),
                       isPhotoOnly: Boolean(data.isPhotoOnly),
                       photo: data.photo || null,
