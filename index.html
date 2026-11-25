@@ -757,6 +757,10 @@
       // Visual caps keep luminance pulses <= 2 Hz and color shifts <= ~1.18 Hz (below WCAG 2.3.1 3-flashes/sec threshold)
       const BPM_MIN_VISUAL_PERIOD_MS = 500;
       const BPM_COLOR_CHANGE_COOLDOWN_MS = 850;
+      const BPM_AUDIO_FLOOR = 0.015;
+      const BPM_BEAT_THRESHOLD = 0.045;
+      const BPM_SILENCE_STOP_MS = 2200;
+      const BPM_NO_BEAT_STOP_MS = 4500;
       let isMicListening = false;
       let micStarting = false;
       let micAudioCtx = null;
@@ -767,11 +771,13 @@
       let micRafId = null;
       let micPeakTimes = [];
       let micLastPeakMs = 0;
+      let micLastAudioMs = 0;
       let micDetectedBpm = null;
       let bpmColorIndex = 0;
       let bpmDanceRafId = null;
       let bpmLastFrameMs = 0;
       let bpmBeatPhase = 0;
+      let bpmDanceIntensity = 0;
       let bpmLastColorChangeMs = 0;
 
       function showToast(message) {
@@ -826,6 +832,11 @@
 
       function resetBpmVisuals() {
         bpmBeatPhase = 0;
+        bpmDanceIntensity = 0;
+        if (billboardStage && state.pulseEffect === 'bpm') {
+          billboardStage.style.borderColor = 'rgba(255, 255, 255, 0.14)';
+          billboardStage.style.boxShadow = 'none';
+        }
         if (bpmFillWash) {
           bpmFillWash.style.opacity = '0';
           bpmFillWash.style.backgroundColor = 'var(--accent-color)';
@@ -838,42 +849,45 @@
         }
       }
 
-      function renderBpmDanceFrame(danceLevel, hasLockedBpm, prefersReducedMotion) {
+      function renderBpmDanceFrame(danceLevel, intensity, prefersReducedMotion) {
         if (!state.isPulseActive || state.pulseEffect !== 'bpm' || !billboardStage) return;
 
         const layerColor = getCurrentBpmPaletteColor();
-        const clamped = Math.max(0, Math.min(1, danceLevel));
-        const activeScale = prefersReducedMotion
-          ? 1
-          : 1 + clamped * (hasLockedBpm ? 0.032 : 0.012);
+        const clamped = Math.max(0, Math.min(1, danceLevel)) * Math.max(0, Math.min(1, intensity));
+        const activeScale = prefersReducedMotion ? 1 : 1 + clamped * 0.032;
         const glowBlur = prefersReducedMotion
-          ? 18
-          : Math.round(14 + clamped * (hasLockedBpm ? 34 : 14));
+          ? Math.round(18 * intensity)
+          : Math.round(clamped * 34);
 
         billboardStage.style.borderRadius = '34px';
         billboardStage.style.clipPath = 'inset(0 round 34px)';
-        billboardStage.style.borderColor = clamped > 0.45 ? layerColor : 'rgba(255, 255, 255, 0.16)';
-        billboardStage.style.boxShadow = `inset 0 0 ${glowBlur}px ${Math.round(4 + clamped * 6)}px ${layerColor}`;
+        billboardStage.style.borderColor =
+          intensity > 0.05 && clamped > 0.45 ? layerColor : 'rgba(255, 255, 255, 0.14)';
+        billboardStage.style.boxShadow =
+          intensity > 0.01
+            ? `inset 0 0 ${Math.max(8, glowBlur)}px ${Math.round(2 + clamped * 8)}px ${layerColor}`
+            : 'none';
 
         if (bpmFillWash) {
           bpmFillWash.style.backgroundColor = layerColor;
           const washOpacity = prefersReducedMotion
-            ? 0.06
-            : hasLockedBpm
-              ? 0.03 + clamped * 0.11
-              : 0.02 + clamped * 0.04;
+            ? 0.06 * intensity
+            : intensity > 0.01
+              ? (0.03 + clamped * 0.11) * intensity
+              : 0;
           bpmFillWash.style.opacity = washOpacity.toFixed(3);
         }
 
         if (bpmWaveLayer) {
           bpmWaveLayer.style.backgroundColor = layerColor;
-          bpmWaveLayer.style.boxShadow = `inset 0 0 ${glowBlur}px ${layerColor}`;
+          bpmWaveLayer.style.boxShadow =
+            intensity > 0.01 ? `inset 0 0 ${Math.max(8, glowBlur)}px ${layerColor}` : 'none';
           bpmWaveLayer.style.transform = `scale(${activeScale.toFixed(4)})`;
           const waveOpacity = prefersReducedMotion
-            ? 0.04
-            : hasLockedBpm
-              ? 0.02 + clamped * 0.15
-              : clamped * 0.05;
+            ? 0.04 * intensity
+            : intensity > 0.01
+              ? (0.02 + clamped * 0.15) * intensity
+              : 0;
           bpmWaveLayer.style.opacity = waveOpacity.toFixed(3);
         }
       }
@@ -891,30 +905,40 @@
         const dtMs = bpmLastFrameMs ? Math.min(100, Math.max(0, nowMs - bpmLastFrameMs)) : 0;
         bpmLastFrameMs = nowMs;
 
-        const visualIntervalMs = getSafeVisualBeatIntervalMs(micDetectedBpm);
-        const prevPhase = bpmBeatPhase;
-        bpmBeatPhase = (bpmBeatPhase + dtMs / visualIntervalMs) % 1;
-        const wrappedBeat = bpmBeatPhase < prevPhase;
+        const hasActiveMusic = isMicListening && Boolean(micDetectedBpm);
+        if (hasActiveMusic) {
+          bpmDanceIntensity = Math.min(1, bpmDanceIntensity + dtMs / 250);
+          const visualIntervalMs = getSafeVisualBeatIntervalMs(micDetectedBpm);
+          const prevPhase = bpmBeatPhase;
+          bpmBeatPhase = (bpmBeatPhase + dtMs / visualIntervalMs) % 1;
+          const wrappedBeat = bpmBeatPhase < prevPhase;
 
-        if (
-          wrappedBeat &&
-          micDetectedBpm &&
-          !prefersReducedMotion &&
-          nowMs - bpmLastColorChangeMs >= BPM_COLOR_CHANGE_COOLDOWN_MS
-        ) {
-          bpmColorIndex = (bpmColorIndex + 1) % 3;
-          bpmLastColorChangeMs = nowMs;
-        }
-
-        let danceLevel;
-        if (prefersReducedMotion) {
-          danceLevel = 0.25;
+          if (
+            wrappedBeat &&
+            !prefersReducedMotion &&
+            nowMs - bpmLastColorChangeMs >= BPM_COLOR_CHANGE_COOLDOWN_MS
+          ) {
+            bpmColorIndex = (bpmColorIndex + 1) % 3;
+            bpmLastColorChangeMs = nowMs;
+          }
         } else {
-          const wave = 0.5 + 0.5 * Math.cos(bpmBeatPhase * Math.PI * 2);
-          danceLevel = micDetectedBpm ? Math.pow(wave, 1.8) : 0.15 + 0.25 * wave;
+          bpmDanceIntensity = Math.max(0, bpmDanceIntensity - dtMs / 350);
+          if (bpmDanceIntensity === 0) {
+            bpmBeatPhase = 0;
+          }
         }
 
-        renderBpmDanceFrame(danceLevel, Boolean(micDetectedBpm), prefersReducedMotion);
+        let danceLevel = 0;
+        if (bpmDanceIntensity > 0) {
+          if (prefersReducedMotion) {
+            danceLevel = 0.25;
+          } else {
+            const wave = 0.5 + 0.5 * Math.cos(bpmBeatPhase * Math.PI * 2);
+            danceLevel = Math.pow(wave, 1.8);
+          }
+        }
+
+        renderBpmDanceFrame(danceLevel, bpmDanceIntensity, prefersReducedMotion);
         bpmDanceRafId = requestAnimationFrame(stepBpmDanceLoop);
       }
 
@@ -1141,10 +1165,15 @@
         const rms = Math.sqrt(sumSq / micTimeData.length);
 
         const nowMs = performance.now();
-        const isPulseHit = rms > 0.045 && nowMs - micLastPeakMs >= 260;
+        if (rms > BPM_AUDIO_FLOOR) {
+          micLastAudioMs = nowMs;
+        }
+
+        const isPulseHit = rms > BPM_BEAT_THRESHOLD && nowMs - micLastPeakMs >= 260;
 
         if (isPulseHit) {
           micLastPeakMs = nowMs;
+          micLastAudioMs = nowMs;
           micPeakTimes.push(nowMs);
           if (micPeakTimes.length > 16) {
             micPeakTimes.shift();
@@ -1169,6 +1198,17 @@
           if (micDetectedBpm) {
             const phaseErr = bpmBeatPhase > 0.5 ? bpmBeatPhase - 1 : bpmBeatPhase;
             bpmBeatPhase = (bpmBeatPhase - phaseErr * 0.15 + 1) % 1;
+          }
+        } else if (micDetectedBpm || micPeakTimes.length > 0) {
+          const silentTooLong = micLastAudioMs > 0 && nowMs - micLastAudioMs >= BPM_SILENCE_STOP_MS;
+          const noBeatTooLong = micLastPeakMs > 0 && nowMs - micLastPeakMs >= BPM_NO_BEAT_STOP_MS;
+          if (silentTooLong || noBeatTooLong) {
+            micPeakTimes = [];
+            micLastPeakMs = 0;
+            if (micDetectedBpm !== null) {
+              micDetectedBpm = null;
+              updateMicBpmButtonUI();
+            }
           }
         }
 
@@ -1199,6 +1239,7 @@
         micTimeData = null;
         micPeakTimes = [];
         micLastPeakMs = 0;
+        micLastAudioMs = 0;
         bpmLastColorChangeMs = 0;
         const lastDetectedBpm = micDetectedBpm;
         micDetectedBpm = null;
@@ -1248,6 +1289,7 @@
 
           micPeakTimes = [];
           micLastPeakMs = 0;
+          micLastAudioMs = 0;
           bpmLastColorChangeMs = performance.now();
           micStarting = false;
           isMicListening = true;
