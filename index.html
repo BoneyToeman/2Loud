@@ -1248,6 +1248,12 @@
       }
 
       async function startMicBpmDetection() {
+        // Check persisted microphone permission decision
+        const micPermission = localStorage.getItem('BPM_MICROPHONE_GRANTED');
+        if (micPermission === 'denied') {
+          showToast('Microphone access previously denied. Enable in browser settings to use BPM mode.');
+          return;
+        }
         if (isMicListening || micStarting) return;
 
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -1267,6 +1273,9 @@
             audio: true,
             video: false,
           });
+
+          // Persist granted permission decision
+          localStorage.setItem('BPM_MICROPHONE_GRANTED', 'true');
 
           if (!state.isPulseActive || state.pulseEffect !== 'bpm') {
             stopMicBpmDetection(true);
@@ -1295,6 +1304,10 @@
           showToast('Listening to music beat...');
           micRafId = requestAnimationFrame(processMicBeatFrame);
         } catch (err) {
+          // Persist denied permission decision
+          if (err && (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError')) {
+            localStorage.setItem('BPM_MICROPHONE_GRANTED', 'denied');
+          }
           stopMicBpmDetection(true);
           if (err && (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError')) {
             showToast('Microphone permission denied');
